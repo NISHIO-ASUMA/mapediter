@@ -1,6 +1,6 @@
 //====================================
 //
-// マップエディター外部化 [main.cpp]
+// マップエディター試作版 [main.cpp]
 // Author: Asuma Nishio
 //
 //====================================
@@ -41,7 +41,8 @@ RECT g_windowRect;						// ウィンドウを切り替えるための変数
 LPD3DXFONT g_pFont = NULL;				// フォントへのポインタ
 int g_nCountFPS = 0;					// FPSカウンタ
 int nGetNumber = 0;						// 番号
-int Filenamepass;
+int Filenamepass;						// ファイル名
+
 static bool g_DeviceLost = false;
 static UINT g_ResizeWidth = 0, g_ResizeHeight = 0;
 static D3DPRESENT_PARAMETERS  g_d3dpp = {};
@@ -50,13 +51,16 @@ static D3DPRESENT_PARAMETERS  g_d3dpp = {};
 // プロトタイプ宣言
 //******************************
 void ToggleFullscreen(HWND hWnd);		//　ウィンドウをフルスクリーンにする方法
-void DrawEditkey(void);
+void DrawEditkey(void);					// エディター画面の操作フォント用
 void DrawModeChange();					// モード切り替え
 void ScalBlock(void);					// 拡大率
-void DrawEditMove();
-void DrawPlayerPos();
-void DebugEditModelInfo();
+void DrawEditMove();					// 移動量
+void DrawPlayerPos();					// プレイヤー座標
+void DebugEditModelInfo();				// 配置モデル情報
 
+//******************************
+// imgui
+//******************************
 bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void ResetDevice();
