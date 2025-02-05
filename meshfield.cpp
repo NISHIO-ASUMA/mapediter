@@ -144,6 +144,7 @@ void UninitMeshField(void)
 		g_apTextureMeshField->Release();
 		g_apTextureMeshField = NULL;
 	}
+
 	// 頂点バッファの破棄
 	if (g_pVtxBuffMeshField != NULL)
 	{
