@@ -38,7 +38,7 @@ bool isPlayer;
 //=========================
 void InitCamera(void)
 {
-	g_camera.posV = D3DXVECTOR3(0.0f, 180.0f, -1000.0f);		 // カメラの位置
+	g_camera.posV = D3DXVECTOR3(0.0f, 240.0f, -1000.0f);		 // カメラの位置
 	g_camera.posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			 // カメラの見ている位置
 	g_camera.vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);			 // 上方向ベクトル
 	g_camera.rot = D3DXVECTOR3(D3DX_PI * 0.65f, 0.0f, 0.0f); // 角度
@@ -78,13 +78,13 @@ void UpdateCamera(void)
 	//編集モード中のカメラ移動
 	MouseEditMode();	
 	
-	if (KeyboardTrigger(DIK_P))
-	{// Pキー
+	if (KeyboardTrigger(DIK_F10))
+	{// F10キー
 		// 旋回起動
 		isrot = true;
 	}
-	else if (KeyboardTrigger(DIK_O))
-	{// Oキー
+	else if (KeyboardTrigger(DIK_F11))
+	{// F11キー
 		// 旋回終了
 		isrot = false;
 	}

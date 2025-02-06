@@ -32,7 +32,7 @@
 // マクロ定義
 //**************************
 #define CLASS_NAME "WindowClass"          // ウインドウクラスの名前
-#define WINDOW_NAME "SampleModelViewer"	  // ウインドウの名前(キャプションに表示)
+#define WINDOW_NAME "試作ツールver.α"	  // ウインドウの名前(キャプションに表示)
 #define SCREEN_WIDTH (1280)               // ウインドウの幅
 #define SCREEN_HEIGHT (720)               // ウインドウの高さ
 #define FVF_VERTEX_2D (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1) // 頂点フォーマット[2D]

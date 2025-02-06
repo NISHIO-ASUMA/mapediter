@@ -21,6 +21,7 @@
 #include "meshfield.h"
 #include "player.h"
 #include "block.h"
+#include "mouse.h"
 
 //*********************************
 // 特殊コード
@@ -28,7 +29,6 @@
 #include "imgui.h"
 #include "imgui_impl_dx9.h"
 #include "imgui_impl_win32.h"
-#include "mouse.h"
 
 //*****************************
 // グローバル変数宣言
@@ -50,7 +50,7 @@ static D3DPRESENT_PARAMETERS  g_d3dpp = {};
 //******************************
 // プロトタイプ宣言
 //******************************
-void ToggleFullscreen(HWND hWnd);		//　ウィンドウをフルスクリーンにする方法
+void ToggleFullscreen(HWND hWnd);		// ウィンドウをフルスクリーンにする方法
 void DrawEditkey(void);					// エディター画面の操作フォント用
 void DrawModeChange();					// モード切り替え
 void DrawEditMove();					// 移動量
@@ -64,35 +64,6 @@ bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void ResetDevice();
 
-//=================================================
-// ウィンドウをフルスクリーンに変える処理
-//=================================================
-void ToggleFullscreen(HWND hWnd)
-{
-	// 現在のウィンドウスタイルを取得
-	DWORD dwStyle = GetWindowLong(hWnd, GWL_STYLE);
-
-	if (g_isFullscreen)
-	{
-		// ウィンドウモードに切り替え
-		SetWindowLong(hWnd, GWL_STYLE, dwStyle | WS_OVERLAPPEDWINDOW);
-		SetWindowPos(hWnd, HWND_TOP, g_windowRect.left, g_windowRect.top,
-		g_windowRect.right - g_windowRect.left, g_windowRect.bottom - g_windowRect.top,
-		SWP_FRAMECHANGED | SWP_NOACTIVATE);
-		ShowWindow(hWnd, SW_NORMAL);
-	}
-	else
-	{
-		// フルスクリーンモードに切り替え
-		GetWindowRect(hWnd, &g_windowRect);
-		SetWindowLong(hWnd, GWL_STYLE, dwStyle & ~WS_OVERLAPPEDWINDOW);
-		SetWindowPos(hWnd, HWND_TOP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
-		SWP_FRAMECHANGED | SWP_NOACTIVATE);
-		ShowWindow(hWnd, SW_MAXIMIZE);
-	}
-
-	g_isFullscreen = !g_isFullscreen;
-}
 
 //===============================
 // メイン関数
@@ -163,29 +134,29 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 	dwCurrentTime = 0;					// 初期化
 	dwExecLastTime = timeGetTime();		// 現在時刻を保存
 
-	// Initialize Direct3D
-	if (!CreateDeviceD3D(hWnd))
-	{
-		CleanupDeviceD3D();
-		::UnregisterClass(wcex.lpszClassName, wcex.hInstance);
-		return 1;
-	}
+	//// Initialize Direct3D
+	//if (!CreateDeviceD3D(hWnd))
+	//{
+	//	CleanupDeviceD3D();
+	//	::UnregisterClass(wcex.lpszClassName, wcex.hInstance);
+	//	return 1;
+	//}
 
 	// ウインドウの表示
 	ShowWindow(hWnd, SW_SHOWMAXIMIZED); // ウインドウの表示状態の設定
 	UpdateWindow(hWnd);				    // クライアント領域の更新
 
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	//IMGUI_CHECKVERSION();
+	//ImGui::CreateContext();
+	//ImGuiIO& io = ImGui::GetIO(); (void)io;
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
-	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsDark();
 
-	// Imguiの初期化
-	ImGui_ImplWin32_Init(hWnd);
-	ImGui_ImplDX9_Init(g_pD3DDevice);
+	//// Imguiの初期化
+	//ImGui_ImplWin32_Init(hWnd);
+	//ImGui_ImplDX9_Init(g_pD3DDevice);
 
 	// 初期化
 	DWORD dwFrameCount;					// フレームカウント
@@ -256,43 +227,43 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 			}
 		}
 
-		// Handle lost D3D9 device
-		if (g_DeviceLost)
-		{
-			HRESULT hr = g_pD3DDevice->TestCooperativeLevel();
-			if (hr == D3DERR_DEVICELOST)
-			{
-				::Sleep(10);
-				continue;
-			}
-			if (hr == D3DERR_DEVICENOTRESET)
-			{
-				ResetDevice();
-				g_DeviceLost = false;
+		//// Handle lost D3D9 device
+		//if (g_DeviceLost)
+		//{
+		//	HRESULT hr = g_pD3DDevice->TestCooperativeLevel();
+		//	if (hr == D3DERR_DEVICELOST)
+		//	{
+		//		::Sleep(10);
+		//		continue;
+		//	}
+		//	if (hr == D3DERR_DEVICENOTRESET)
+		//	{
+		//		ResetDevice();
+		//		g_DeviceLost = false;
 
-			}
-		}
+		//	}
+		//}
 
-		// Handle window resize (we don't resize directly in the WM_SIZE handler)
-		if (g_ResizeWidth != 0 && g_ResizeHeight != 0)
-		{
-			g_d3dpp.BackBufferWidth = g_ResizeWidth;
-			g_d3dpp.BackBufferHeight = g_ResizeHeight;
-			g_ResizeWidth = g_ResizeHeight = 0;
-			ResetDevice();
-		}
+		//// Handle window resize (we don't resize directly in the WM_SIZE handler)
+		//if (g_ResizeWidth != 0 && g_ResizeHeight != 0)
+		//{
+		//	g_d3dpp.BackBufferWidth = g_ResizeWidth;
+		//	g_d3dpp.BackBufferHeight = g_ResizeHeight;
+		//	g_ResizeWidth = g_ResizeHeight = 0;
+		//	ResetDevice();
+		//}
 
-		// IMGUIのフレーム開始
-		ImGui_ImplDX9_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
+		//// IMGUIのフレーム開始
+		//ImGui_ImplDX9_NewFrame();
+		//ImGui_ImplWin32_NewFrame();
+		//ImGui::NewFrame();
 
-		// テスト
-		ImGui::Text("Test");
+		//// テスト
+		//ImGui::Text("Test");
 
-		// レンダリング
-		ImGui::Render();
-		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+		//// レンダリング
+		//ImGui::Render();
+		//ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 
 
 	}
@@ -359,9 +330,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			break;
 
-		case VK_F11:
-			ToggleFullscreen(hWnd);	 // F11でフルスクリーン
-			break;
+		//case VK_F12:
+		//	ToggleFullscreen(hWnd);	 // F12でフルスクリーン
+		//	break;
 		}
 		break;
 
@@ -610,15 +581,15 @@ void Uninit(void)
 	UninitJoypad();
 
 	// Cleanup 破棄
-	ImGui_ImplDX9_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
+	//ImGui_ImplDX9_Shutdown();
+	//ImGui_ImplWin32_Shutdown();
+	//ImGui::DestroyContext();
 
 	// ライト
 	UninitLight();
 
 	// メッシュ
-	// UninitMeshField();
+	UninitMeshField();
 
 	// 影
 	UninitShadow();
@@ -736,7 +707,7 @@ void Draw(void)
 			
 		SetCamera();
 
-		// DrawMeshField();
+		DrawMeshField();
 
 		if (g_mode == MODE_EDIT)
 		{
@@ -793,7 +764,7 @@ void DrawFPS(void)
 	char aString[256];
 
 	//文字列に代入
-	wsprintf(&aString[0], "************************ 試作モデルビューワー ****************\n");
+	wsprintf(&aString[0], "//************************\n// ショートカットキー情報\n//************************\n");
 
 	//テキストの描画
 	g_pFont->DrawText(NULL, &aString[0], -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
@@ -805,11 +776,13 @@ void DrawEditkey(void)
 {
 	// ローカル変数
 	RECT rect5 = { 0,120,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect6 = { 0,100,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect6 = { 0,60,SCREEN_WIDTH,SCREEN_HEIGHT };
 	RECT rect7 = { 0,80,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect8 = { 0,140,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect8 = { 0,100,SCREEN_WIDTH,SCREEN_HEIGHT };
 	RECT rect10 = { 0,40,SCREEN_WIDTH,SCREEN_HEIGHT };
 	RECT rect11 = { 0,140,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect12 = { 0,160,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect13 = { 0,180,SCREEN_WIDTH,SCREEN_HEIGHT };
 
 	char aString5[128];
 	char aString6[128];
@@ -817,6 +790,8 @@ void DrawEditkey(void)
 	char aString8[128];
 	char aString10[128];
 	char aString11[128];
+	char aString12[128];
+	char aString13[128];
 	char aStFile[64];
 
 	// ファイルパスを取得
@@ -840,19 +815,23 @@ void DrawEditkey(void)
 		break;
 	}
 
-	wsprintf(&aString5[0], "ファイルに書き出し [ F7 ] ***< %s >*** \n",&aStFile[0]);
-	wsprintf(&aString6[0], "モード切り替え [ F1 ] / [ F2 ]\n");
-	wsprintf(&aString7[0], "[ 特殊コマンド ]---------------------------------------\n");
-	wsprintf(&aString8[0], "[ 読み込み情報 ]--------------\n");
-	wsprintf(&aString10[0], " CollisionBlock判定  [ 有効 ]\n");
-	wsprintf(&aString11[0], "ファイルパスを切り替え [ F9 ]\n");
+	wsprintf(&aString5[0], "[ F7 ] : ファイル書き出し  ***< %s >*** \n",&aStFile[0]);
+	wsprintf(&aString6[0], "[ F1 ] / [ F2 ] : モード切り替え \n");
+	wsprintf(&aString7[0], "[ F3 ] / [ F4 ] : ワイヤーフレーム切り替え\n");
+	wsprintf(&aString8[0], "[ F5 ] / [ F6 ] : 当たり判定描画切り替え ( プレイモード時 )\n");
+	wsprintf(&aString10[0]," CollisionBlock判定  [ 有効 ]\n");
+	wsprintf(&aString11[0],"[ F8 ] : 書き出すファイルパスを切り替え \n");
+	wsprintf(&aString12[0],"[ F9 ] : 配置情報の再読み込み \n");
+	wsprintf(&aString13[0],"[ F10 ] / [ F11 ] : 自動旋回切り替え ( プレイモード時 ) \n");
 
 	g_pFont->DrawText(NULL, &aString5[0], -1, &rect5, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString6[0], -1, &rect6, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString7[0], -1, &rect7, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
-	g_pFont->DrawText(NULL, &aString8[0], -1, &rect8, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
+	g_pFont->DrawText(NULL, &aString8[0], -1, &rect8, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString10[0], -1, &rect10, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString11[0], -1, &rect11, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
+	g_pFont->DrawText(NULL, &aString12[0], -1, &rect12, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
+	g_pFont->DrawText(NULL, &aString13[0], -1, &rect13, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 
 }
 //========================
@@ -861,30 +840,39 @@ void DrawEditkey(void)
 void DrawCameraPos(void)
 {
 	// ローカル変数
-	RECT rect = { 0,540,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect1 = { 0,560,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect2 = { 0,500,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect3 = { 0,520,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect = { 0,600,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect1 = { 0,620,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect2 = { 0,520,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect3 = { 0,580,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect4 = { 0,640,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect5 = { 0,660,SCREEN_WIDTH,SCREEN_HEIGHT };
 
+	// 文字列
 	char aString[256];
 	char aString1[256];
 	char aString2[256];
 	char aString3[256];
+	char aString4[64];
+	char aString5[64];
 
 	// 取得
 	Camera* pCamera = GetCamera();
 
 	// 文字列に代入
-	wsprintf(&aString2[0], "[ カメラ関係 ]---------------------------------------\n");
-	sprintf(&aString[0],   "カメラのrot.y:%.2f\n", pCamera->rot.y);
-	sprintf(&aString1[0],  "カメラのrot.x:%.2f\n", pCamera->rot.x);
-	wsprintf(&aString3[0], "視点操作 [ マウスクリックしながら上下左右移動 ]\n");
+	wsprintf(&aString2[0], "//************************\n// カメラ情報\n//************************\n");
+	sprintf(&aString[0],   "[ カメラのrot.y ]: < %.2f >\n", pCamera->rot.y);
+	sprintf(&aString1[0],  "[ カメラのrot.x ]: < %.2f >\n", pCamera->rot.x);
+	wsprintf(&aString3[0], "[ 視点 / 注視点 ] : < マウス操作 >\n");
+	wsprintf(&aString4[0], "[ ズーム ] :   < マウスホイール >\n");
+	wsprintf(&aString5[0], "[ リセット ] : < マウスホイール押し込み >\n");
 
 	// テキスト描画
 	g_pFont->DrawText(NULL, &aString[0], -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString1[0], -1, &rect1, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString2[0], -1, &rect2, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString3[0], -1, &rect3, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
+	g_pFont->DrawText(NULL, &aString4[0], -1, &rect4, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
+	g_pFont->DrawText(NULL, &aString5[0], -1, &rect5, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 
 }
 //======================
@@ -912,17 +900,14 @@ void DebugEditModelInfo()
 	EDITMODEL* pModelEdit = GetBlockInfo(pEdit[nModel].mapedit.nType); // モデル情報
 
 	// ローカル変数
-	RECT rect = { 0,200,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect1 = { 0,220,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect2 = { 0,240,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect3 = { 0,260,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect4 = { 0,300,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect5 = { 0,320,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect6 = { 0,340,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect7 = { 0,380,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect8 = { 0,400,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect9 = { 0,420,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect10 = { 0,460,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect = { 0,220,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect1 = { 0,320,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect2 = { 0,340,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect3 = { 0,360,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect4 = { 0,400,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect5 = { 0,420,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect6 = { 0,440,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect7 = { 0,480,SCREEN_WIDTH,SCREEN_HEIGHT };
 
 	// 文字列
 	char aString[256];
@@ -933,23 +918,16 @@ void DebugEditModelInfo()
 	char aString5[256];
 	char aString6[256];
 	char aString7[256];
-	char aString8[256];
-	char aString9[256];
-	char aString10[256];
 
 	// 文字列に代入
-	wsprintf(&aString[0], "[ 配置する情報 ]-------------------\n");
-	sprintf(&aString1[0], "[ 選択中のモデルのX座標 ] : %.2f\n", pEdit[nModel].mapedit.pos.x);
-	sprintf(&aString2[0], "[ 選択中のモデルのY座標 ] : %.2f\n", pEdit[nModel].mapedit.pos.y);
-	sprintf(&aString3[0], "[ 選択中のモデルのZ座標 ] : %.2f\n", pEdit[nModel].mapedit.pos.z);
-	sprintf(&aString4[0], "[ 選択中のモデルのXの拡大率 ] : %.2f\n", pEdit[nModel].mapedit.Scal.x);
-	sprintf(&aString5[0], "[ 選択中のモデルのYの拡大率 ] : %.2f\n", pEdit[nModel].mapedit.Scal.y);
-	sprintf(&aString6[0], "[ 選択中のモデルのZの拡大率 ] : %.2f\n", pEdit[nModel].mapedit.Scal.z);
-	sprintf(&aString7[0], "[ 選択中のモデルのXの回転値 ] : %.2f\n", pEdit[nModel].mapedit.rot.x);
-
-	sprintf(&aString8[0], "[ 選択中のモデルのYの回転値 ] : %.2f\n", pEdit[nModel].mapedit.rot.y);
-	sprintf(&aString9[0], "[ 選択中のモデルのZの回転値 ] : %.2f\n", pEdit[nModel].mapedit.rot.z);
-	sprintf(&aString10[0],"[ 選択中のモデルの種類 ] : %s \n", pModelEdit->FileName);
+	wsprintf(&aString[0], "//************************\n// 配置するモデル情報\n//************************\n");
+	sprintf(&aString1[0], "[ モデルのX座標 ] : < %.2f >\n", pEdit[nModel].mapedit.pos.x);
+	sprintf(&aString2[0], "[ モデルのY座標 ] : < %.2f >\n", pEdit[nModel].mapedit.pos.y);
+	sprintf(&aString3[0], "[ モデルのZ座標 ] : < %.2f >\n", pEdit[nModel].mapedit.pos.z);
+	sprintf(&aString4[0], "[ モデルのXの拡大率 ] : < %.2f > \n", pEdit[nModel].mapedit.Scal.x);
+	sprintf(&aString5[0], "[ モデルのYの拡大率 ] : < %.2f >\n", pEdit[nModel].mapedit.Scal.y);
+	sprintf(&aString6[0], "[ モデルのZの拡大率 ] : < %.2f >\n", pEdit[nModel].mapedit.Scal.z);
+	sprintf(&aString7[0], "[ 選択中のモデルの種類 ] : < %s > \n", pModelEdit->FileName);
 
 	// テキスト描画
 	g_pFont->DrawText(NULL, &aString[0], -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
@@ -960,9 +938,6 @@ void DebugEditModelInfo()
 	g_pFont->DrawText(NULL, &aString5[0], -1, &rect5, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString6[0], -1, &rect6, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString7[0], -1, &rect7, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
-	g_pFont->DrawText(NULL, &aString8[0], -1, &rect8, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
-	g_pFont->DrawText(NULL, &aString9[0], -1, &rect9, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
-	g_pFont->DrawText(NULL, &aString10[0], -1, &rect10, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 
 }
 bool CreateDeviceD3D(HWND hWnd)
@@ -1023,11 +998,11 @@ void DrawNumBlock()
 	nData = ReturnEdit();
 
 	// ローカル変数
-	RECT rect = { 0,40,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect = { 0,280,SCREEN_WIDTH,SCREEN_HEIGHT };
 	char aString[256];
 
 	// 文字列に代入
-	wsprintf(&aString[0], "配置した数 < %d / 256 >\n", nData);
+	wsprintf(&aString[0], "[ 配置したモデル数 ] < %d / 256 >\n", nData);
 	
 	// テキスト描画
 	g_pFont->DrawText(NULL, &aString[0], -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
@@ -1058,7 +1033,7 @@ void DrawModeChange()
 	// 文字列に代入
 	wsprintf(&aString[0], "現在のモード < %s >\n", &aString1[0]);
 
-	// 表示
+	// フォントの表示
 	g_pFont->DrawText(NULL, &aString[0], -1, &rect, DT_RIGHT, D3DCOLOR_RGBA(255, 255,255, 255));
 
 }
@@ -1067,7 +1042,7 @@ void DrawModeChange()
 //============================
 void DrawEditMove()
 {
-	// 取得
+	// データの取得
 	float fspeed = ReturnSpeed();
 	int nType = ReturnType();
 	float fjumpmove = ReturnJump();
@@ -1077,24 +1052,32 @@ void DrawEditMove()
 	RECT rect1 = { 0,180,SCREEN_WIDTH,SCREEN_HEIGHT };
 	RECT rect2 = { 0,200,SCREEN_WIDTH,SCREEN_HEIGHT };
 	RECT rect3 = { 0,220,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect4 = { 0,140,SCREEN_WIDTH,SCREEN_HEIGHT };
 
 	// 文字列
 	char aString[128];
 	char aString1[128];
 	char aString2[128];
 	char aString3[128];
+	char aString4[128];
 
 	// 文字列に代入
-	sprintf(&aString[0], "設定した移動量 < %.2f>\n", fspeed);
-	sprintf(&aString1[0],"設定した種類数 < %d / 256 >\n", nType);
-	wsprintf(&aString2[0],"読み込むモーションファイル < data/motion.txt >\n");
-	sprintf(&aString3[0], "設定したジャンプ量 < %.2f >\n", fjumpmove);
+	sprintf(&aString[0], "[ 配置時の移動量 ] : <   %.2f  >\n", fspeed);
+	sprintf(&aString1[0],"[ 読み込む種類数 ] : < %d / 256 >\n", nType);
+	wsprintf(&aString2[0],"[ モーション ] : < motion.txt >\n");
+	sprintf(&aString3[0],"[ ジャンプの数値 ] : <   %.2f  >\n", fjumpmove);
+	wsprintf(&aString4[0], "----- 読み込み情報 [ model.txt ] -----\n");
+
 
 	// テキスト描画
 	g_pFont->DrawText(NULL, &aString[0], -1, &rect, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString1[0], -1, &rect1, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString2[0], -1, &rect2, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString3[0], -1, &rect3, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
+	g_pFont->DrawText(NULL, &aString4[0], -1, &rect4, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
+
+
+
 
 }
 //==============================
@@ -1143,4 +1126,33 @@ void onWireFrame()
 void offWireFrame() 
 {
 	g_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+}
+//=================================================
+// ウィンドウをフルスクリーンに変える処理
+//=================================================
+void ToggleFullscreen(HWND hWnd)
+{
+	// 現在のウィンドウスタイルを取得
+	DWORD dwStyle = GetWindowLong(hWnd, GWL_STYLE);
+
+	if (g_isFullscreen)
+	{
+		// ウィンドウモードに切り替え
+		SetWindowLong(hWnd, GWL_STYLE, dwStyle | WS_OVERLAPPEDWINDOW);
+		SetWindowPos(hWnd, HWND_TOP, g_windowRect.left, g_windowRect.top,
+			g_windowRect.right - g_windowRect.left, g_windowRect.bottom - g_windowRect.top,
+			SWP_FRAMECHANGED | SWP_NOACTIVATE);
+		ShowWindow(hWnd, SW_NORMAL);
+	}
+	else
+	{
+		// フルスクリーンモードに切り替え
+		GetWindowRect(hWnd, &g_windowRect);
+		SetWindowLong(hWnd, GWL_STYLE, dwStyle & ~WS_OVERLAPPEDWINDOW);
+		SetWindowPos(hWnd, HWND_TOP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
+			SWP_FRAMECHANGED | SWP_NOACTIVATE);
+		ShowWindow(hWnd, SW_MAXIMIZE);
+	}
+
+	g_isFullscreen = !g_isFullscreen;
 }

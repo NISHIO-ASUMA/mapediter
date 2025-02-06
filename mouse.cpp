@@ -207,6 +207,7 @@ bool GetMouseState(DIMOUSESTATE* mouseState)
 {
 	// マウスデバイスを取得
 	LPDIRECTINPUTDEVICE8 pMouse = GetMouseDevice();
+
 	if (pMouse == NULL)
 	{
 		return false;

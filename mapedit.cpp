@@ -144,8 +144,14 @@ void UpdateMapEdit()
 			SaveEdit();
 		}
 
-		if (KeyboardTrigger(DIK_F10))
-		{// F10キーを押した
+		if (KeyboardTrigger(DIK_F8))
+		{// F8キーを押した
+			// ファイルパスを切り替え
+			g_CurrentFilepass = (g_CurrentFilepass + 1) % FILEPASS_MAX;
+		}
+
+		if (KeyboardTrigger(DIK_F9))
+		{// F9キーを押した
 			// 再読み込み
 			ReloadEdit();
 			isLoad = true;
@@ -336,11 +342,6 @@ void UpdateMapEdit()
 			}
 		}
 
-		if (KeyboardTrigger(DIK_F9))
-		{// F9キーを押した
-			// ファイルパスを切り替え
-			g_CurrentFilepass = (g_CurrentFilepass + 1) % FILEPASS_MAX;
-		}
 
 		// 移動量の減衰
 		g_MapEdit[g_Edit].mapedit.move.x += (0.0f - g_MapEdit[g_Edit].mapedit.move.x) * 0.5f;
