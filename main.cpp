@@ -214,10 +214,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 				ImGui::NewFrame();           // ImGui の新しいフレームを開始（ここで UI を描画できるようになる）
 
 				// ImGui のウィンドウ作成
-				ImGui::Begin("Test Window"); // "Test Window" という名前のウィンドウを作成
-				ImGui::Text("こんにちは"); // ウィンドウ内にテキストを表示
-				ImGui::Text("Asuma Nishio");
-				ImGui::Text("こんにちは");
+				ImGui::Begin("tool_Window"); // ウィンドウ生成
+				ImGui::Text("Asuma Nishio"); // 文字出力
+				ImGui::Text("imgui test");	 // 文字出力
+				ImGui::Text("mapedit");		 // 文字出力
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS);
 
 				ImGui::End();                // ウィンドウを閉じる
 
@@ -635,11 +636,15 @@ void Draw(void)
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::Begin("Test Window");
-		ImGui::Text("Asuma Nishio");
-		ImGui::Text("Asuma Nishio");
-		ImGui::Text("こんにちは");
-		ImGui::End();
+		static float fcolor = 0.0f;
+
+		ImGui::Begin("tool_Window"); // ウィンドウ生成
+		ImGui::Text("Asuma Nishio"); // 文字出力
+		ImGui::Text("imgui test");	 // 文字出力
+		ImGui::Text("mapedit");		 // 文字出力
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS);
+
+		ImGui::End();				 // ウィンドウ終了
 
 		ImGui::Render();
 		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
