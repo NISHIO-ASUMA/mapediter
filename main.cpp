@@ -1048,11 +1048,11 @@ void DrawEditMove()
 	float fjumpmove = ReturnJump();
 
 	// ローカル変数
-	RECT rect = { 0,160,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect1 = { 0,180,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect2 = { 0,200,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect3 = { 0,220,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect4 = { 0,140,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect = { 0,100,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect1 = { 0,120,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect2 = { 0,140,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect3 = { 0,160,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect4 = { 0,80,SCREEN_WIDTH,SCREEN_HEIGHT };
 
 	// 文字列
 	char aString[128];
@@ -1089,10 +1089,10 @@ void DrawPlayerPos()
 	PLAYER* pPlayer = GetPlayer();
 
 	// ローカル変数
-	RECT rect =  { 0,60,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect1 = { 0,80,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect2 = { 0,100,SCREEN_WIDTH,SCREEN_HEIGHT };
-	RECT rect3 = { 0,120,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect =  { 0,200,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect1 = { 0,220,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect2 = { 0,240,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect3 = { 0,260,SCREEN_WIDTH,SCREEN_HEIGHT };
 
 	// 文字列
 	char aString[128];
@@ -1101,10 +1101,10 @@ void DrawPlayerPos()
 	char aString3[128];
 
 	// 文字列に代入
-	wsprintf(&aString[0], "[ プレイヤー情報 ]--------------------\n");
-	sprintf(&aString1[0], "プレイヤーpos.x < %.2f >\n", pPlayer->pos.x);
-	sprintf(&aString2[0], "プレイヤーpos.y < %.2f >\n", pPlayer->pos.y);
-	sprintf(&aString3[0], "プレイヤーpos.z < %.2f >\n", pPlayer->pos.z);
+	wsprintf(&aString[0], "------ [ プレイヤー情報 ] ------\n");
+	sprintf(&aString1[0], "プレイヤーpos.x  : <  %.2f  >\n", pPlayer->pos.x);
+	sprintf(&aString2[0], "プレイヤーpos.y  : <   %.2f  >\n", pPlayer->pos.y);
+	sprintf(&aString3[0], "プレイヤーpos.z  : <  %.2f  >\n", pPlayer->pos.z);
 
 	// テキスト描画
 	g_pFont->DrawText(NULL, &aString[0], -1, &rect, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
