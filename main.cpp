@@ -3,6 +3,7 @@
 // マップエディター試作版 [main.cpp]
 // Author: Asuma Nishio
 //
+// TODO : imguiのデモウィンドウ出してみる
 //====================================
 
 //****************************
@@ -50,12 +51,16 @@ static D3DPRESENT_PARAMETERS  g_d3dpp = {};
 //******************************
 // プロトタイプ宣言
 //******************************
-void ToggleFullscreen(HWND hWnd);		// ウィンドウをフルスクリーンにする方法
-void DrawEditkey(void);					// エディター画面の操作フォント用
-void DrawModeChange();					// モード切り替え
-void DrawEditMove();					// 移動量
-void DrawPlayerPos();					// プレイヤー座標
-void DebugEditModelInfo();				// 配置モデル情報
+void ToggleFullscreen(HWND hWnd);	// ウィンドウをフルスクリーンにする方法
+void DrawEditkey(void);				// エディター画面の操作フォント用
+void DrawModeChange();				// モード切り替え
+void DrawEditMove();				// 移動量
+void DrawPlayerPos();				// プレイヤー座標
+void DebugEditModelInfo();			// 配置モデル情報
+void DrawCameraPos(void);			// カメラの座標表示
+void onWireFrame();					// ワイヤーフレーム起動
+void offWireFrame();				// ワイヤーフレーム終了
+void DrawNumBlock();				// ブロックのデバッグ表示
 
 //******************************
 // imguiのプロトタイプ宣言
@@ -63,7 +68,6 @@ void DebugEditModelInfo();				// 配置モデル情報
 bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void ResetDevice();
-
 
 //===============================
 // メイン関数
@@ -116,13 +120,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 		CW_USEDEFAULT,				// ウインドウの左上のY座標
 		(rect.right - rect.left),   // ウインドウ幅
 		(rect.bottom - rect.top),   // ウインドウの高さ
-		NULL,
-		NULL,
+		NULL,						// NULL
+		NULL,						// NULL
 		hInstance,					// インスタンスハンドル
 		NULL);						// ウインドウ作成データ
 
 
-		// 初期化処理
+	// 初期化処理
 	if (FAILED(Init(hInstance, hWnd, TRUE)))
 	{
 		// 初期化処理が失敗したとき
@@ -134,29 +138,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 	dwCurrentTime = 0;					// 初期化
 	dwExecLastTime = timeGetTime();		// 現在時刻を保存
 
-	//// Initialize Direct3D
-	//if (!CreateDeviceD3D(hWnd))
-	//{
-	//	CleanupDeviceD3D();
-	//	::UnregisterClass(wcex.lpszClassName, wcex.hInstance);
-	//	return 1;
-	//}
-
 	// ウインドウの表示
-	ShowWindow(hWnd, SW_SHOWMAXIMIZED); // ウインドウの表示状態の設定
+	ShowWindow(hWnd, nCmdShow); // ウインドウの表示状態の設定
 	UpdateWindow(hWnd);				    // クライアント領域の更新
-
-	//IMGUI_CHECKVERSION();
-	//ImGui::CreateContext();
-	//ImGuiIO& io = ImGui::GetIO(); (void)io;
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-	//ImGui::StyleColorsDark();
-
-	//// Imguiの初期化
-	//ImGui_ImplWin32_Init(hWnd);
-	//ImGui_ImplDX9_Init(g_pD3DDevice);
 
 	// 初期化
 	DWORD dwFrameCount;					// フレームカウント
@@ -224,47 +208,24 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 				// 描画処理
 				Draw();
 
+				// ImGui のフレーム開始処理
+				ImGui_ImplDX9_NewFrame();    // DirectX9 用の新しいフレームを開始
+				ImGui_ImplWin32_NewFrame();  // Win32 用の新しいフレームを開始
+				ImGui::NewFrame();           // ImGui の新しいフレームを開始（ここで UI を描画できるようになる）
+
+				// ImGui のウィンドウ作成
+				ImGui::Begin("Test Window"); // "Test Window" という名前のウィンドウを作成
+				ImGui::Text("こんにちは"); // ウィンドウ内にテキストを表示
+				ImGui::Text("Asuma Nishio");
+				ImGui::Text("こんにちは");
+
+				ImGui::End();                // ウィンドウを閉じる
+
+				// ImGui の描画処理
+				ImGui::Render();  // UI をレンダリング準備
+				ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData()); // DirectX9 で UI を描画			
 			}
 		}
-
-		//// Handle lost D3D9 device
-		//if (g_DeviceLost)
-		//{
-		//	HRESULT hr = g_pD3DDevice->TestCooperativeLevel();
-		//	if (hr == D3DERR_DEVICELOST)
-		//	{
-		//		::Sleep(10);
-		//		continue;
-		//	}
-		//	if (hr == D3DERR_DEVICENOTRESET)
-		//	{
-		//		ResetDevice();
-		//		g_DeviceLost = false;
-
-		//	}
-		//}
-
-		//// Handle window resize (we don't resize directly in the WM_SIZE handler)
-		//if (g_ResizeWidth != 0 && g_ResizeHeight != 0)
-		//{
-		//	g_d3dpp.BackBufferWidth = g_ResizeWidth;
-		//	g_d3dpp.BackBufferHeight = g_ResizeHeight;
-		//	g_ResizeWidth = g_ResizeHeight = 0;
-		//	ResetDevice();
-		//}
-
-		//// IMGUIのフレーム開始
-		//ImGui_ImplDX9_NewFrame();
-		//ImGui_ImplWin32_NewFrame();
-		//ImGui::NewFrame();
-
-		//// テスト
-		//ImGui::Text("Test");
-
-		//// レンダリング
-		//ImGui::Render();
-		//ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-
 
 	}
 
@@ -280,6 +241,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 	// メッセージを返す
 	return(int)msg.wParam;
 }
+
+// IMGUIのハンドラー宣言
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 //=======================================
 // ウインドウプロシージャ
 //=======================================
@@ -288,6 +253,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	const RECT rect = { 0,0,SCREEN_WIDTH,SCREEN_HEIGHT }; // ウインドウの領域
 	int nID;
 
+	// ImGui のイベント処理
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+	{
+		return true;
+	}
 	switch (uMsg)
 	{
 	case WM_ACTIVATE:	// アクティブ時：1　非アクティブ時：0
@@ -329,10 +299,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			}
 
 			break;
-
-		//case VK_F12:
-		//	ToggleFullscreen(hWnd);	 // F12でフルスクリーン
-		//	break;
 		}
 		break;
 
@@ -462,9 +428,6 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// 影
 	InitShadow();
 
-	// メッシュ
-	// InitMeshField();
-
 	// エディター
 	InitMapEdit();
 
@@ -474,92 +437,21 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// プレイヤー
 	InitPlayer();
 
-	return S_OK; // 結果を返す
-#if 0
 
-//==============================
-// 	   (IMGUIのセットアップ)
-//==============================
-
-
-	// Setup Dear ImGui context　(セットアップ)
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
+	// ====== ImGui 初期化 ======
+	IMGUI_CHECKVERSION(); // ImGui のバージョンチェック
+	ImGui::CreateContext(); // ImGui コンテキスト作成
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // キーボード入力有効化
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // ゲームパッド入力有効化
 
-	// Setup Platform/Renderer backends　(プラっとフォーム/バックエンド環境)
+	ImGui::StyleColorsDark(); // ダークテーマ適用
+
+	// ImGui のバックエンド初期化（Win32 & DirectX9）
 	ImGui_ImplWin32_Init(hWnd);
 	ImGui_ImplDX9_Init(g_pD3DDevice);
 
-	//================
-	// 各種初期化処理
-	//================
-
-	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-	// デモウィンドウの出現
-	if (show_demo_window)
-	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-	{
-		ImGui::ShowDemoWindow(&show_demo_window);
-
-		static float f = 0.0f;
-		static int counter = 0;
-
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-		ImGui::Checkbox("Another Window", &show_another_window);
-
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-			counter++;
-		ImGui::SameLine();
-		ImGui::Text("counter = %d", counter);
-
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-		ImGui::End();
-	}
-
-	// 3. Show another simple window.
-	if (show_another_window)
-	{
-		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		ImGui::Text("Hello from another window!");
-		if (ImGui::Button("Close Me"))
-			show_another_window = false;
-		ImGui::End();
-	}
-
-
-	// Our state　(変数の指定)
-	bool show_demo_window = true;
-	bool show_another_window = false;
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-	// Start the Dear ImGui frame (IMGUIのフレーム開始)
-	ImGui_ImplDX9_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-
-	// メインループの下に追加
-	ImGui::Render();
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-
-	//================
-// 終了処理に追加
-//=================
-// Cleanup 破棄
-	ImGui_ImplDX9_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-
-
-#endif
+	return S_OK; // 結果を返す
 
 }
 //==================
@@ -580,16 +472,8 @@ void Uninit(void)
 	// パッド
 	UninitJoypad();
 
-	// Cleanup 破棄
-	//ImGui_ImplDX9_Shutdown();
-	//ImGui_ImplWin32_Shutdown();
-	//ImGui::DestroyContext();
-
 	// ライト
 	UninitLight();
-
-	// メッシュ
-	UninitMeshField();
 
 	// 影
 	UninitShadow();
@@ -624,14 +508,16 @@ void Uninit(void)
 		g_pD3D = NULL;
 	}
 
-
+	// Imguiの破棄
+	ImGui_ImplDX9_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
 }
 //===================
 // 更新処理
 //===================
 void Update(void)
 {
-
 	//===========================
 	// 各種オブジェクト更新処理
 	//===========================
@@ -645,8 +531,6 @@ void Update(void)
 	UpdateCamera();
 
 	UpdateShadow();
-
-	// UpdateMeshField();
 
 	UpdateBlock();
 
@@ -707,8 +591,6 @@ void Draw(void)
 			
 		SetCamera();
 
-		DrawMeshField();
-
 		if (g_mode == MODE_EDIT)
 		{
 			// エディタ
@@ -746,6 +628,21 @@ void Draw(void)
 		DrawEditMove();
 
 		DebugEditModelInfo();
+
+
+		// ====== ImGui の描画開始 ======
+		ImGui_ImplDX9_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::Begin("Test Window");
+		ImGui::Text("Asuma Nishio");
+		ImGui::Text("Asuma Nishio");
+		ImGui::Text("こんにちは");
+		ImGui::End();
+
+		ImGui::Render();
+		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 
 		// 描画終了
 		g_pD3DDevice->EndScene();
@@ -938,53 +835,6 @@ void DebugEditModelInfo()
 	g_pFont->DrawText(NULL, &aString5[0], -1, &rect5, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString6[0], -1, &rect6, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString7[0], -1, &rect7, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
-
-}
-bool CreateDeviceD3D(HWND hWnd)
-{
-	if ((g_pD3D = Direct3DCreate9(D3D_SDK_VERSION)) == nullptr)
-	{
-		return false;
-	}
-
-	// Create the D3DDevice
-	ZeroMemory(&g_d3dpp, sizeof(g_d3dpp));
-	g_d3dpp.Windowed = TRUE;
-	g_d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	g_d3dpp.BackBufferFormat = D3DFMT_UNKNOWN; // Need to use an explicit format with alpha if needing per-pixel alpha composition.
-	g_d3dpp.EnableAutoDepthStencil = TRUE;
-	g_d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
-	g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;           // Present with vsync
-	//g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;   // Present without vsync, maximum unthrottled framerate
-	if (g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &g_pD3DDevice) < 0)
-	{
-		return false;
-	}
-
-	return true;
-
-}
-void CleanupDeviceD3D()
-{
-	if (g_pD3DDevice) 
-	{ 
-		g_pD3DDevice->Release();
-		g_pD3DDevice = nullptr; 
-	}
-
-	if (g_pD3D) 
-	{
-		g_pD3D->Release(); 
-		g_pD3D = nullptr; 
-	}
-}
-void ResetDevice()
-{
-	ImGui_ImplDX9_InvalidateDeviceObjects();
-	HRESULT hr = g_pD3DDevice->Reset(&g_d3dpp);
-	if (hr == D3DERR_INVALIDCALL)
-		IM_ASSERT(0);
-	ImGui_ImplDX9_CreateDeviceObjects();
 }
 //============================
 // 現在の配置番号を表示
@@ -1076,9 +926,6 @@ void DrawEditMove()
 	g_pFont->DrawText(NULL, &aString3[0], -1, &rect3, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString4[0], -1, &rect4, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
 
-
-
-
 }
 //==============================
 // プレイヤー座標表示
@@ -1155,4 +1002,39 @@ void ToggleFullscreen(HWND hWnd)
 	}
 
 	g_isFullscreen = !g_isFullscreen;
+}
+
+bool CreateDeviceD3D(HWND hWnd)
+{
+	if ((g_pD3D = Direct3DCreate9(D3D_SDK_VERSION)) == nullptr)
+		return false;
+
+	// Create the D3DDevice
+	ZeroMemory(&g_d3dpp, sizeof(g_d3dpp));
+	g_d3dpp.Windowed = TRUE;
+	g_d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+	g_d3dpp.BackBufferFormat = D3DFMT_UNKNOWN; // Need to use an explicit format with alpha if needing per-pixel alpha composition.
+	g_d3dpp.EnableAutoDepthStencil = TRUE;
+	g_d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
+	g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;           // Present with vsync
+	//g_d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;   // Present without vsync, maximum unthrottled framerate
+	if (g_pD3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &g_d3dpp, &g_pD3DDevice) < 0)
+		return false;
+
+	return true;
+}
+
+void CleanupDeviceD3D()
+{
+	if (g_pD3DDevice) { g_pD3DDevice->Release(); g_pD3DDevice = nullptr; }
+	if (g_pD3D) { g_pD3D->Release(); g_pD3D = nullptr; }
+}
+
+void ResetDevice()
+{
+	ImGui_ImplDX9_InvalidateDeviceObjects();
+	HRESULT hr = g_pD3DDevice->Reset(&g_d3dpp);
+	if (hr == D3DERR_INVALIDCALL)
+		IM_ASSERT(0);
+	ImGui_ImplDX9_CreateDeviceObjects();
 }

@@ -43,10 +43,10 @@
 //**********************
 typedef struct
 {
-	D3DXVECTOR3 pos;			// 頂点座標
-	float rhw;					// 座標変換用係数(1.0fで固定)
-	D3DCOLOR col;				// 頂点カラー
-	D3DXVECTOR2 tex;			// テクスチャ座標
+	D3DXVECTOR3 pos;	// 頂点座標
+	float rhw;			// 座標変換用係数(1.0fで固定)
+	D3DCOLOR col;		// 頂点カラー
+	D3DXVECTOR2 tex;	// テクスチャ座標
 }VERTEX_2D;
 
 //**********************
@@ -54,10 +54,10 @@ typedef struct
 //**********************
 typedef struct
 {
-	D3DXVECTOR3 pos;			// 頂点座標
-	D3DXVECTOR3 nor;			// 法線ベクトル
-	D3DCOLOR col;				// 頂点カラー
-	D3DXVECTOR2 tex;			// テクスチャ座標
+	D3DXVECTOR3 pos;	// 頂点座標
+	D3DXVECTOR3 nor;	// 法線ベクトル
+	D3DCOLOR col;		// 頂点カラー
+	D3DXVECTOR2 tex;	// テクスチャ座標
 }VERTEX_3D;
 
 //**********************
@@ -87,9 +87,4 @@ LPDIRECT3DDEVICE9 GetDevice(void);													//　デバイスの取得
 MODE GetMode(void);																	//　モードの取得
 void DrawFPS(void);																	//　デバッグ表示
 																					  
-void DrawCameraPos(void);															//　カメラの座標表示
-void onWireFrame();																	// ワイヤーフレーム起動
-void offWireFrame();																// ワイヤーフレーム終了
-void DrawNumBlock();																// ブロックのデバッグ表示
-
 #endif
