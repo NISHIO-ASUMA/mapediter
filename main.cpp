@@ -222,6 +222,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 
 				ImGui::End();                // ウィンドウを閉じる
 
+				// 新しい ImGui ウィンドウ
+				ImGui::Begin("New Window");
+				ImGui::Text("This is a new ImGui window.");
+				ImGui::Text("You can add more UI elements here.");
+				if (ImGui::Button("Click Me"))
+				{
+					ImGui::Text("Button Clicked!");
+				}
+				ImGui::End();
+
 				// ImGui の描画処理
 				ImGui::Render();  // UI をレンダリング準備
 				ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData()); // DirectX9 で UI を描画			
@@ -630,13 +640,11 @@ void Draw(void)
 
 		DebugEditModelInfo();
 
-
+#if 1
 		// ====== ImGui の描画開始 ======
 		ImGui_ImplDX9_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
-
-		static float fcolor = 0.0f;
 
 		ImGui::Begin("tool_Window"); // ウィンドウ生成
 		ImGui::Text("Asuma Nishio"); // 文字出力
@@ -646,9 +654,19 @@ void Draw(void)
 
 		ImGui::End();				 // ウィンドウ終了
 
+		// 新しい ImGui ウィンドウ
+		ImGui::Begin("New Window");
+		ImGui::Text("This is a new ImGui window.");
+		ImGui::Text("You can add more UI elements here.");
+		if (ImGui::Button("Click Me"))
+		{
+			ImGui::Text("Button Clicked!");
+		}
+		ImGui::End();
+
 		ImGui::Render();
 		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-
+#endif
 		// 描画終了
 		g_pD3DDevice->EndScene();
 	}
