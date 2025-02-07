@@ -3,7 +3,6 @@
 // マップエディター試作版 [main.cpp]
 // Author: Asuma Nishio
 //
-// TODO : imguiのデモウィンドウ出してみる
 //====================================
 
 //****************************
@@ -335,6 +334,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// Direct3Dオブジェクトの生成
 	g_pD3D = Direct3DCreate9(D3D_SDK_VERSION);
+
 	if (g_pD3D == NULL)
 	{
 		return E_FAIL;
@@ -344,7 +344,6 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	{
 		return E_FAIL;
 	}
-	// デバイスのプレゼンテーションのパラメーターを設定
 
 	// パラメーターの0クリア
 	ZeroMemory(&d3dpp, sizeof(d3dpp));
@@ -561,25 +560,27 @@ void Update(void)
 	}
 
 	if (KeyboardTrigger(DIK_F1))
-	{
+	{// モード変更
 		g_mode = MODE_PLAY;
 
+		// モデル読み込み
 		LoadBlock();
 
 	}
 	else if (KeyboardTrigger(DIK_F2))
-	{
+	{// モード変更
 		g_mode = MODE_EDIT;
 	}
 
 	if (g_mode == MODE_EDIT)
-	{
+	{// 編集モードの時
 		// 更新
 		UpdateMapEdit();
 	}
 
 	if (g_mode == MODE_PLAY)
-	{
+	{// プレイモードの時
+		// プレイヤーの更新
 		UpdatePlayer();
 	}
 }

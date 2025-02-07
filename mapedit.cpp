@@ -40,14 +40,14 @@ const char* WRITE_FILENAME[FILEPASS_MAX] =
 //****************************
 // グローバル変数宣言
 //****************************
-EDITMODEL g_ModelInfo[MAX_TEXTURE];	// ブロックの情報を保存
-MAPMODELINFO g_MapEdit[MAX_EDITOBJ];// 配置時の情報
-int g_nTypeNum;						// ブロックの種類数を保存
-int g_Edit;							// 配置数をカウント
-float g_fspeed;						// 移動量
-float g_jump;						// ジャンプ
-int g_CurrentFilepass;				// ファイルパスのインデックス
-bool isLoad;
+EDITMODEL g_ModelInfo[MAX_TEXTURE];	 // ブロックの情報を保存
+MAPMODELINFO g_MapEdit[MAX_EDITOBJ]; // 配置時の情報
+int g_nTypeNum;						 // ブロックの種類数を保存
+int g_Edit;							 // 配置数をカウント
+float g_fspeed;						 // 移動量
+float g_jump;						 // ジャンプ
+int g_CurrentFilepass;				 // ファイルパスのインデックス
+bool isLoad;						 // ロードしたかどうか
 
 //****************************
 // プロトタイプ宣言
@@ -81,7 +81,7 @@ void InitMapEdit()
 	g_Edit = 0; // 配置数のカウント
 	g_MapEdit[0].bUse = true;	// 使用状態
 	g_CurrentFilepass = FILEPASS_0;	// 初期ファイルパス
-	isLoad = false;
+	isLoad = false;	// ロード状態
 }
 //============================
 // マップエディター終了処理
