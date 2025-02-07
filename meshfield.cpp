@@ -27,7 +27,7 @@
 // グローバル変数宣言
 //*****************************
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffMeshField = NULL;	// 頂点バッファのポインタ
-LPDIRECT3DTEXTURE9 g_apTextureMeshField = NULL;		// テクスチャのポインタ
+LPDIRECT3DTEXTURE9 g_apTextureMeshField[2] = {};		// テクスチャのポインタ
 LPDIRECT3DINDEXBUFFER9 g_pIdxBuffMeshField = NULL;	// インデックスバッファへのポインタ
 Meshfield g_Mesh;									// 構造体変数
 
@@ -41,8 +41,13 @@ void InitMeshField(void)
 
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"data\\TEXTURE\\field100.jpg",
-		&g_apTextureMeshField);
+		"data\\TEXTURE\\faver.png",
+		&g_apTextureMeshField[1]);
+
+	// テクスチャの読み込み
+	D3DXCreateTextureFromFile(pDevice,
+		"data\\TEXTURE\\trash.png",
+		&g_apTextureMeshField[0]);
 
 	// 変数の初期化
 	g_Mesh.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -59,7 +64,7 @@ void InitMeshField(void)
 	//------------------------------------------
 	
 	// 頂点バッファ(三角形は意識しない)
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * MAX_ALLVTX,
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D_MULTI) * MAX_ALLVTX,
 		D3DUSAGE_WRITEONLY, 
 		FVF_VERTEX_3D,
 		D3DPOOL_MANAGED,
@@ -75,7 +80,7 @@ void InitMeshField(void)
 		NULL);
 
 	// 頂点情報のポインタ
-	VERTEX_3D* pVtx = NULL;
+	VERTEX_3D_MULTI * pVtx = NULL;
 
 	// 頂点バッファをロックし,頂点情報へのポインタを取得
 	g_pVtxBuffMeshField->Lock(0, 0, (void**)&pVtx, 0);
@@ -97,6 +102,9 @@ void InitMeshField(void)
 
 			// テクスチャ座標の設定
 			pVtx[nCntPos].tex = D3DXVECTOR2(TexX *  nCntz, TexZ * nCntx);
+
+			// テクスチャ座標の設定
+			pVtx[nCntPos].texM = D3DXVECTOR2(TexX * nCntz, TexZ * nCntx);
 
 			nCntPos++;												// インクリメントして1を足す
 		}
@@ -139,10 +147,14 @@ void InitMeshField(void)
 void UninitMeshField(void)
 {
 	// テクスチャの破棄
-	if (g_apTextureMeshField != NULL)
+	for (int n = 0; n < 2; n++)
 	{
-		g_apTextureMeshField->Release();
-		g_apTextureMeshField = NULL;
+		if (g_apTextureMeshField[n] != NULL)
+		{
+			g_apTextureMeshField[n]->Release();
+			g_apTextureMeshField[n] = NULL;
+		}
+
 	}
 
 	// 頂点バッファの破棄
@@ -158,6 +170,7 @@ void UninitMeshField(void)
 		g_pIdxBuffMeshField->Release();
 		g_pIdxBuffMeshField = NULL;
 	}
+
 }
 //==============================
 // メッシュフィールド更新処理
@@ -192,16 +205,18 @@ void DrawMeshField(void)
 	pDevice->SetTransform(D3DTS_WORLD, &g_Mesh.mtxWorld);
 
 	// 頂点バッファをデータストリームに設定
-	pDevice->SetStreamSource(0, g_pVtxBuffMeshField, 0, sizeof(VERTEX_3D));
+	pDevice->SetStreamSource(0, g_pVtxBuffMeshField, 0, sizeof(VERTEX_3D_MULTI));
 
 	// インデックスバッファをデータストリームに設定
 	pDevice->SetIndices(g_pIdxBuffMeshField);
 
 	// 頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_3D);
+	pDevice->SetFVF(FVF_VERTEX_3D_MULTI);
 
 	//テクスチャの設定
-	pDevice->SetTexture(0, g_apTextureMeshField);
+	pDevice->SetTexture(0, g_apTextureMeshField[0]);
+
+	pDevice->SetTexture(1, g_apTextureMeshField[1]);
 
 	// ポリゴンの描画
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,

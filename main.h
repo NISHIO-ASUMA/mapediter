@@ -37,6 +37,7 @@
 #define SCREEN_HEIGHT (720)               // ウインドウの高さ
 #define FVF_VERTEX_2D (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1) // 頂点フォーマット[2D]
 #define FVF_VERTEX_3D (D3DFVF_XYZ | D3DFVF_NORMAL |  D3DFVF_DIFFUSE | D3DFVF_TEX1) // 座標,法線,カラー,テクスチャ
+#define FVF_VERTEX_3D_MULTI (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2) // 座標,法線,カラー,マルチテクスチャ
 
 //**********************
 // 頂点情報[2D]の構造体
@@ -59,6 +60,18 @@ typedef struct
 	D3DCOLOR col;		// 頂点カラー
 	D3DXVECTOR2 tex;	// テクスチャ座標
 }VERTEX_3D;
+
+//*****************************
+// 頂点情報[3D_マルチ]の構造体
+//*****************************
+typedef struct
+{
+	D3DXVECTOR3 pos;	// 頂点座標
+	D3DXVECTOR3 nor;	// 法線ベクトル
+	D3DCOLOR col;		// 頂点カラー
+	D3DXVECTOR2 tex;	// テクスチャ座標
+	D3DXVECTOR2 texM;	// マルチテクスチャ
+}VERTEX_3D_MULTI;
 
 //**********************
 // 画面の種類

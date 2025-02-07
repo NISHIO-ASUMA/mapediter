@@ -406,6 +406,12 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 
+	// テクスチャステージチャートの設定
+	g_pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	g_pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	g_pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	g_pD3DDevice->SetTextureStageState(1, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
+
 	//==============================
 	// 初期化処理
 	//==============================
