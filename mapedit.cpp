@@ -137,6 +137,7 @@ void UpdateMapEdit()
 
 	if (nMode == MODE_EDIT)
 	{// MODEが編集モードなら
+
 		//	書き出し処理
 		if (KeyboardTrigger(DIK_F7))
 		{// F7キーを押した
@@ -243,7 +244,7 @@ void UpdateMapEdit()
 			g_MapEdit[g_Edit].mapedit.Scal.x -= 0.1f;
 
 			if (g_MapEdit[g_Edit].mapedit.Scal.x <= 0.1f)
-			{
+			{// 下限を設定
 				g_MapEdit[g_Edit].mapedit.Scal.x = 0.1f;
 			}
 
@@ -254,7 +255,7 @@ void UpdateMapEdit()
 			g_MapEdit[g_Edit].mapedit.Scal.x += 0.1f;
 
 			if (g_MapEdit[g_Edit].mapedit.Scal.x >= 2.0f)
-			{
+			{// 上限を設定
 				g_MapEdit[g_Edit].mapedit.Scal.x = 2.0f;
 			}
 		}
@@ -265,7 +266,7 @@ void UpdateMapEdit()
 			g_MapEdit[g_Edit].mapedit.Scal.y -= 0.1f;
 
 			if (g_MapEdit[g_Edit].mapedit.Scal.y <= 0.1f)
-			{
+			{// 下限を設定
 				g_MapEdit[g_Edit].mapedit.Scal.y = 0.1f;
 			}
 
@@ -276,7 +277,7 @@ void UpdateMapEdit()
 			g_MapEdit[g_Edit].mapedit.Scal.y += 0.1f;
 
 			if (g_MapEdit[g_Edit].mapedit.Scal.y >= 2.0f)
-			{
+			{// 上限を設定
 				g_MapEdit[g_Edit].mapedit.Scal.y = 2.0f;
 			}
 
@@ -288,7 +289,7 @@ void UpdateMapEdit()
 			g_MapEdit[g_Edit].mapedit.Scal.z += 0.1f;
 
 			if (g_MapEdit[g_Edit].mapedit.Scal.z >= 2.0f)
-			{
+			{// 上限を設定
 				g_MapEdit[g_Edit].mapedit.Scal.z = 2.0f;
 			}
 
@@ -299,7 +300,7 @@ void UpdateMapEdit()
 			g_MapEdit[g_Edit].mapedit.Scal.z -= 0.1f;
 
 			if (g_MapEdit[g_Edit].mapedit.Scal.z <= 0.1f)
-			{
+			{// 下限を設定
 				g_MapEdit[g_Edit].mapedit.Scal.z = 0.1f;
 			}
 

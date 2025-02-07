@@ -76,7 +76,7 @@ void UpdateCamera(void)
 	MODE mode = GetMode();
 
 	//編集モード中のカメラ移動
-	// MouseEditMode();	
+	MouseEditMode();	
 	
 	if (KeyboardTrigger(DIK_F10))
 	{// F10キー
