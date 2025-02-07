@@ -145,7 +145,6 @@ void UninitMeshField(void)
 		g_apTextureMeshField = NULL;
 	}
 
-
 	// 頂点バッファの破棄
 	if (g_pVtxBuffMeshField != NULL)
 	{
@@ -200,7 +199,7 @@ void DrawMeshField(void)
 	pDevice->SetIndices(g_pIdxBuffMeshField);
 
 	// 頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_3D_MULTI);
+	pDevice->SetFVF(FVF_VERTEX_3D);
 
 	//テクスチャの設定
 	pDevice->SetTexture(0, g_apTextureMeshField);

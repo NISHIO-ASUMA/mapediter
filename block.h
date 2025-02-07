@@ -48,7 +48,6 @@ typedef struct
 typedef struct
 {
 	bool bUse;		// g—pó‘Ô‚©‚Ç‚¤‚©
-	bool isCollision;
 	Block aBlock;   // \‘¢‘Ìî•ñ
 }BlockInfo;
 
