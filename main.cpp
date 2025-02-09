@@ -24,7 +24,7 @@
 #include "mouse.h"
 
 //*********************************
-// 特殊コード
+// imguiインクルードファイル宣言
 //*********************************
 #include "imgui.h"
 #include "imgui_impl_dx9.h"
@@ -42,7 +42,11 @@ LPD3DXFONT g_pFont = NULL;				// フォントへのポインタ
 int g_nCountFPS = 0;					// FPSカウンタ
 int nGetNumber = 0;						// 番号
 int Filenamepass;						// ファイル名
+int nBlockSet = 0;						// 配置するブロック数
 
+//*****************************
+// imguiグローバル変数宣言
+//*****************************
 static bool g_DeviceLost = false;
 static UINT g_ResizeWidth = 0, g_ResizeHeight = 0;
 static D3DPRESENT_PARAMETERS  g_d3dpp = {};
@@ -73,7 +77,8 @@ void ResetDevice();
 //===============================
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);		// メモリリーク検知用のフラグ
+	// メモリリーク検知用のフラグ
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);		
 
 	DWORD dwCurrentTime;			// 現在時刻
 	DWORD dwExecLastTime;			// 終了時刻
@@ -215,21 +220,10 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 				// ImGui のウィンドウ作成
 				ImGui::Begin("tool_Window"); // ウィンドウ生成
 				ImGui::Text("Asuma Nishio"); // 文字出力
-				ImGui::Text("imgui test");	 // 文字出力
 				ImGui::Text("mapedit");		 // 文字出力
 				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS);
-
+				ImGui::Text("SetBlock Num < %d / 256 >", nBlockSet);
 				ImGui::End();                // ウィンドウを閉じる
-
-				// 新しい ImGui ウィンドウ
-				ImGui::Begin("New Window");
-				ImGui::Text("This is a new ImGui window.");
-				ImGui::Text("You can add more UI elements here.");
-				if (ImGui::Button("Click Me"))
-				{
-					ImGui::Text("Button Clicked!");
-				}
-				ImGui::End();
 
 				// ImGui の描画処理
 				ImGui::Render();  // UI をレンダリング準備
@@ -657,21 +651,11 @@ void Draw(void)
 
 		ImGui::Begin("tool_Window"); // ウィンドウ生成
 		ImGui::Text("Asuma Nishio"); // 文字出力
-		ImGui::Text("imgui test");	 // 文字出力
 		ImGui::Text("mapedit");		 // 文字出力
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS);
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS); // FPS表記
+		ImGui::Text("SetBlock Num < %d / 256 >", nBlockSet); // 配置ブロック数
 
 		ImGui::End();				 // ウィンドウ終了
-
-		// 新しい ImGui ウィンドウ
-		ImGui::Begin("New Window");
-		ImGui::Text("This is a new ImGui window.");
-		ImGui::Text("You can add more UI elements here.");
-		if (ImGui::Button("Click Me"))
-		{
-			ImGui::Text("Button Clicked!");
-		}
-		ImGui::End();
 
 		ImGui::Render();
 		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
@@ -873,18 +857,15 @@ void DebugEditModelInfo()
 //============================
 void DrawNumBlock()
 {
-	// ローカル変数
-	int nData = 0;
-
 	// 取得
-	nData = ReturnEdit();
+	nBlockSet = ReturnEdit();
 
 	// ローカル変数
 	RECT rect = { 0,280,SCREEN_WIDTH,SCREEN_HEIGHT };
 	char aString[256];
 
 	// 文字列に代入
-	wsprintf(&aString[0], "[ 配置したモデル数 ] < %d / 256 >\n", nData);
+	wsprintf(&aString[0], "[ 配置したモデル数 ] < %d / 256 >\n", nBlockSet);
 	
 	// テキスト描画
 	g_pFont->DrawText(NULL, &aString[0], -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
