@@ -216,10 +216,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 				// ImGuiフレームの終了
 				ImGui::EndFrame();
 
-				// ImGui の描画処理
-				ImGui::Render();  // UIレンダリングの準備
-				ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData()); // DirectX9 で UI を描画			
-
 				// 描画処理
 				Draw();
 
