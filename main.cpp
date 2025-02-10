@@ -71,6 +71,7 @@ void DrawNumBlock();				// ブロックのデバッグ表示
 bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void ResetDevice();
+void ImguiDrawData();
 
 //===============================
 // メイン関数
@@ -206,16 +207,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 
 				dwFrameCount++;					// フレームカウントを加算
 
-				// 更新処理
-				Update();
-
-				// 描画処理
-				Draw();
-
 				// ImGui のフレーム開始処理
 				ImGui_ImplDX9_NewFrame();    // DirectX9 用の新しいフレームを開始
 				ImGui_ImplWin32_NewFrame();  // Win32 用の新しいフレームを開始
 				ImGui::NewFrame();           // ImGui の新しいフレームを開始（ここで UI を描画できるようになる）
+
+				// 更新処理
+				Update();
 
 				// ImGui のウィンドウ作成
 				ImGui::Begin("tool_Window"); // ウィンドウ生成
@@ -224,9 +222,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 				ImGui::Text("SetBlock Num < %d / 256 >", nBlockSet); // 配置数
 				ImGui::End();                // ウィンドウを閉じる
 
+				// ImGuiフレームの終了
+				ImGui::EndFrame();
+
 				// ImGui の描画処理
 				ImGui::Render();  // UIレンダリングの準備
 				ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData()); // DirectX9 で UI を描画			
+
+				// 描画処理
+				Draw();
+
 			}
 		}
 
@@ -450,7 +455,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // キーボード入力有効化
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // ゲームパッド入力有効化
 
-	ImGui::StyleColorsDark(); // ダークテーマ適用
+	ImGui::StyleColorsLight(); // テーマ適用
 
 	// ImGui のバックエンド初期化（Win32 & DirectX9）
 	ImGui_ImplWin32_Init(hWnd);
@@ -615,6 +620,9 @@ void Draw(void)
 		{
 			// エディター画面
 			DrawMapEdit();
+
+			// Guiウィンドウ
+			ImguiDrawData();
 		}
 
 		if (g_mode == MODE_PLAY)
@@ -655,23 +663,6 @@ void Draw(void)
 
 		// エディターモデル情報の表示
 		DebugEditModelInfo();
-
-#if 1
-		// ====== ImGui の描画開始 ======
-		ImGui_ImplDX9_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-
-		ImGui::Begin("tool_Window"); // ウィンドウ生成
-		ImGui::Text("mapedit");		 // 文字出力
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS); // FPS表記
-		ImGui::Text("SetBlock Num < %d / 256 >", nBlockSet); // 配置ブロック数
-
-		ImGui::End();				 // ウィンドウ終了
-
-		ImGui::Render();
-		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-#endif
 		// 描画終了
 		g_pD3DDevice->EndScene();
 	}
@@ -1072,4 +1063,25 @@ void ResetDevice()
 	if (hr == D3DERR_INVALIDCALL)
 		IM_ASSERT(0);
 	ImGui_ImplDX9_CreateDeviceObjects();
+}
+//==========================================
+// imguiウィンドウの描画処理
+//==========================================
+void ImguiDrawData()
+{
+	// フレーム開始
+	ImGui_ImplDX9_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("tool_Window"); // ウィンドウ生成
+	ImGui::Text("mapedit");		 // 文字出力
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS); // FPS表記
+	ImGui::Text("SetBlock Num < %d / 256 >", nBlockSet); // 配置ブロック数
+
+	ImGui::End();		// ウィンドウの終了
+
+	ImGui::Render(); // レンダリング
+	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+
 }
