@@ -138,26 +138,6 @@ void UpdateMapEdit()
 	if (nMode == MODE_EDIT)
 	{// MODEが編集モードなら
 
-		//	書き出し処理
-		if (KeyboardTrigger(DIK_F7))
-		{// F7キーを押した
-			// 保存する
-			SaveEdit();
-		}
-
-		if (KeyboardTrigger(DIK_F8))
-		{// F8キーを押した
-			// ファイルパスを切り替え
-			g_CurrentFilepass = (g_CurrentFilepass + 1) % FILEPASS_MAX;
-		}
-
-		if (KeyboardTrigger(DIK_F9))
-		{// F9キーを押した
-			// 再読み込み
-			ReloadEdit();
-			isLoad = true;
-		}
-
 		// 移動処理
 		if (GetKeyboardPress(DIK_A))
 		{// Aキーを押した
@@ -343,6 +323,25 @@ void UpdateMapEdit()
 			}
 		}
 
+		//	書き出し処理
+		if (KeyboardTrigger(DIK_F7))
+		{// F7キーを押した
+			// 保存する
+			SaveEdit();
+		}
+
+		if (KeyboardTrigger(DIK_F8))
+		{// F8キーを押した
+			// ファイルパスを切り替え
+			g_CurrentFilepass = (g_CurrentFilepass + 1) % FILEPASS_MAX;
+		}
+
+		if (KeyboardTrigger(DIK_F9))
+		{// F9キーを押した
+			// 再読み込み
+			ReloadEdit();
+			isLoad = true;
+		}
 
 		// 移動量の減衰
 		g_MapEdit[g_Edit].mapedit.move.x += (0.0f - g_MapEdit[g_Edit].mapedit.move.x) * 0.5f;
