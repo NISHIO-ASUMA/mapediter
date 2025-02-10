@@ -76,8 +76,8 @@ void UpdateCamera(void)
 	MODE mode = GetMode();
 
 	//編集モード中のカメラ移動
-	// MouseEditMode();	
-	
+	MouseEditMode();	
+#if 0
 	if (GetKeyboardPress(DIK_LEFT))
 	{
 		// 回転
@@ -164,7 +164,7 @@ void UpdateCamera(void)
 		g_camera.posV.y = g_camera.posR.y - cosf(g_camera.rot.x) * g_camera.fDistance;
 		g_camera.posV.z = g_camera.posR.z - sinf(g_camera.rot.x) * cosf(g_camera.rot.y) * g_camera.fDistance;
 	}
-
+#endif
 	if (KeyboardTrigger(DIK_F10))
 	{// F10キー
 		// 旋回起動
@@ -443,7 +443,7 @@ void MouseView(void)
 //============================
 void MouseEditMode(void)
 {
-	if (OnMousePress(RIGHT_MOUSE))
+	if (OnMousePress(RIGHT_MOUSE) && GetKeyboardPress(DIK_LSHIFT))
 	{
 		D3DXVECTOR2 Move = GetMouseVelocity();
 		D3DXVECTOR2 MoveOld = GetMouseOldVelocity();
@@ -469,7 +469,7 @@ void MouseEditMode(void)
 		g_camera.posR.y = g_camera.posV.y + cosf(g_camera.rot.x) * g_camera.fDistance;
 		g_camera.posR.z = g_camera.posV.z + sinf(g_camera.rot.x) * cosf(g_camera.rot.y) * g_camera.fDistance;
 	}
-	else if (OnMousePress(LEFT_MOUSE))
+	else if (OnMousePress(LEFT_MOUSE) && GetKeyboardPress(DIK_LSHIFT))
 	{
 		D3DXVECTOR2 Move = GetMouseVelocity();
 		D3DXVECTOR2 MoveOld = GetMouseOldVelocity();

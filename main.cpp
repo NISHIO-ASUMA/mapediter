@@ -207,20 +207,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 
 				dwFrameCount++;					// フレームカウントを加算
 
-				// ImGui のフレーム開始処理
-				ImGui_ImplDX9_NewFrame();    // DirectX9 用の新しいフレームを開始
-				ImGui_ImplWin32_NewFrame();  // Win32 用の新しいフレームを開始
-				ImGui::NewFrame();           // ImGui の新しいフレームを開始（ここで UI を描画できるようになる）
-
 				// 更新処理
 				Update();
 
-				// ImGui のウィンドウ作成
-				ImGui::Begin("tool_Window"); // ウィンドウ生成
-				ImGui::Text("mapedit");		 // 文字出力
-				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS); // FPS
-				ImGui::Text("SetBlock Num < %d / 256 >", nBlockSet); // 配置数
-				ImGui::End();                // ウィンドウを閉じる
+				// 描画
+				ImguiDrawData();
 
 				// ImGuiフレームの終了
 				ImGui::EndFrame();
@@ -644,25 +635,25 @@ void Draw(void)
 		// 各種フォントの描画
 		//===========================
 		// キャプション
-		DrawFPS();
+		//DrawFPS();
 
-		// カメラ表示
-		DrawCameraPos();
+		//// カメラ表示
+		//DrawCameraPos();
 
-		// 各種キーの種類
-		DrawEditkey();
+		//// 各種キーの種類
+		//DrawEditkey();
 
-		// 配置数の表示
-		DrawNumBlock();
+		//// 配置数の表示
+		//DrawNumBlock();
 
-		// モード切替表示
-		DrawModeChange();
+		//// モード切替表示
+		//DrawModeChange();
 
-		// テキスト読み込み情報の表示
-		DrawEditMove();
+		//// テキスト読み込み情報の表示
+		//DrawEditMove();
 
-		// エディターモデル情報の表示
-		DebugEditModelInfo();
+		//// エディターモデル情報の表示
+		//DebugEditModelInfo();
 		// 描画終了
 		g_pD3DDevice->EndScene();
 	}
@@ -1069,17 +1060,80 @@ void ResetDevice()
 //==========================================
 void ImguiDrawData()
 {
+	//================================
+	//  情報取得関係
+	//================================
+	PLAYER* pPlayer = GetPlayer(); // プレイヤー
+	MODE nMode = GetMode(); // 現在のモード
+
+	float fspeed = ReturnSpeed(); // 配置速度
+	int nType = ReturnType(); // 種類数
+	int nModel = ReturnEdit(); // 配置カウント
+
+	MAPMODELINFO* pEdit = MapInfo(); // 配置時の情報
+	EDITMODEL* pModelEdit = GetBlockInfo(pEdit[nModel].mapedit.nType); // モデル情報
+	Camera* pCamera = GetCamera(); // カメラ
+	Filenamepass = Filepass(); 	// ファイルパスを取得
+
+	// 文字列
+	char aStFile[256];
+
+	// ファイルパス
+	switch (Filenamepass)
+	{
+	case 0:
+		strcpy(aStFile, "data/stage000.bin"); // 初期ファイル
+		break;
+
+	case 1:
+		strcpy(aStFile, "data/stage001.bin"); // 2番目のファイル
+		break;
+
+	case 2:
+		strcpy(aStFile, "data/stage002.bin"); // 3番目のファイル
+		break;
+
+	default:
+		break;
+	}
+
+	// フラグ変数（グローバルまたは静的変数として定義）
+	static bool showPlayerInfo = true; // プレイヤー
+	static bool showModelInfo = true;  // モデル情報
+	static bool showLoadinfo = true;   // モデルテキスト情報
+
 	// フレーム開始
 	ImGui_ImplDX9_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("tool_Window"); // ウィンドウ生成
-	ImGui::Text("mapedit");		 // 文字出力
+	ImGui::Begin("tool_Window"); // メインウィンドウ生成
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS); // FPS表記
-	ImGui::Text("SetBlock Num < %d / 256 >", nBlockSet); // 配置ブロック数
 
-	ImGui::End();		// ウィンドウの終了
+	// チェックボックスで表示の切り替え
+	ImGui::Checkbox("Show Player Info", &showPlayerInfo);
+
+	ImGui::Checkbox("Show Model Info", &showModelInfo);
+
+	ImGui::Checkbox("Show Load Info", &showLoadinfo);
+
+	if (showPlayerInfo)
+	{
+		ImGui::Text("Player Pos < %.2f,%.2f,%.2f >", GetPlayer()->pos.x, GetPlayer()->pos.y, GetPlayer()->pos.z); // プレイヤー座標
+	}
+	if (showModelInfo)
+	{
+		ImGui::Text("SetBlock Num < %d / 256 >", ReturnEdit()); // 配置ブロック数
+		ImGui::Text("FilePass < %s >", &aStFile[0]); // ファイルパス
+		ImGui::Text("Model_Pos < %.2f,%.2f,%.2f >", pEdit[nModel].mapedit.pos.x, pEdit[nModel].mapedit.pos.y, pEdit[nModel].mapedit.pos.z); // モデル座標
+		ImGui::Text("Model_Scal < %.2f,%.2f,%.2f >", pEdit[nModel].mapedit.Scal.x, pEdit[nModel].mapedit.Scal.y, pEdit[nModel].mapedit.Scal.z); // モデルスケール
+	}
+	if (showLoadinfo)
+	{
+		ImGui::Text("AllBlockType < %d / 256 >", ReturnType()); // 種類数
+
+	}
+	ImGui::End();	// ウィンドウの終了
 
 	ImGui::Render(); // レンダリング
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
