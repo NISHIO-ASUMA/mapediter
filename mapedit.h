@@ -74,7 +74,7 @@ float ReturnSpeed();	// 移動
 int ReturnType();		// 種類数
 float ReturnJump();		// ジャンプ量
 int Filepass();			// ファイルパスを返す
-bool IsGetLoad();
-MAPMODELINFO* MapInfo();
+bool IsGetLoad();		// リロードしたか
+MAPMODELINFO* MapInfo();// 配置時の状況取得
 
 #endif
