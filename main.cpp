@@ -219,14 +219,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 
 				// ImGui のウィンドウ作成
 				ImGui::Begin("tool_Window"); // ウィンドウ生成
-				ImGui::Text("Asuma Nishio"); // 文字出力
 				ImGui::Text("mapedit");		 // 文字出力
-				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS);
-				ImGui::Text("SetBlock Num < %d / 256 >", nBlockSet);
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS); // FPS
+				ImGui::Text("SetBlock Num < %d / 256 >", nBlockSet); // 配置数
 				ImGui::End();                // ウィンドウを閉じる
 
 				// ImGui の描画処理
-				ImGui::Render();  // UI をレンダリング準備
+				ImGui::Render();  // UIレンダリングの準備
 				ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData()); // DirectX9 で UI を描画			
 			}
 		}
@@ -530,26 +529,32 @@ void Update(void)
 	//===========================
 	// 各種オブジェクト更新処理
 	//===========================
+	// キーボードの更新処理
 	UpdateKeyboard();
 
+	// マウスの更新処理
 	UpdateMouse();
 
+	// ゲームパッドの更新処理
 	UpdateJoypad();
 
 	// カメラの更新
 	UpdateCamera();
 
+	// 影の更新処理
 	UpdateShadow();
 
+	// ブロックの更新処理
 	UpdateBlock();
 
-	// ワイヤーフレーム関係
 	if (KeyboardTrigger(DIK_F3))
-	{
+	{// F3キー
+		// ワイヤーフレーム起動
 		onWireFrame();
 	}
 	else if (KeyboardTrigger(DIK_F4))
-	{
+	{// F4キー
+		// ワイヤーフレーム消去
 		offWireFrame();
 	}
 
@@ -586,7 +591,7 @@ void Draw(void)
 	// カメラ取得
 	Camera* pCamera = GetCamera();
 
-	//画面クリア(バックバッファ&Zバッファのクリア)
+	// 画面クリア(バックバッファ&Zバッファのクリア)
 	g_pD3DDevice->Clear(0,
 		NULL,
 		(D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER),
@@ -600,6 +605,7 @@ void Draw(void)
 		// 描画処理
 		//================
 			
+		// カメラをセット
 		SetCamera();
 
 		// メッシュの描画
@@ -607,19 +613,22 @@ void Draw(void)
 
 		if (g_mode == MODE_EDIT)
 		{
-			// エディタ
+			// エディター画面
 			DrawMapEdit();
-
 		}
 
 		if (g_mode == MODE_PLAY)
 		{
+			// プレイヤーの描画
 			DrawPlayer();
 
+			// 影の描画
 			DrawShadow();
 
+			// ブロックの描画
 			DrawBlock();
 
+			// プレイヤー座標の描画
 			DrawPlayerPos();
 		}
 
@@ -629,18 +638,22 @@ void Draw(void)
 		// キャプション
 		DrawFPS();
 
-		// カメラ
+		// カメラ表示
 		DrawCameraPos();
 
 		// 各種キーの種類
 		DrawEditkey();
 
+		// 配置数の表示
 		DrawNumBlock();
 
+		// モード切替表示
 		DrawModeChange();
 
+		// テキスト読み込み情報の表示
 		DrawEditMove();
 
+		// エディターモデル情報の表示
 		DebugEditModelInfo();
 
 #if 1
@@ -650,7 +663,6 @@ void Draw(void)
 		ImGui::NewFrame();
 
 		ImGui::Begin("tool_Window"); // ウィンドウ生成
-		ImGui::Text("Asuma Nishio"); // 文字出力
 		ImGui::Text("mapedit");		 // 文字出力
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS); // FPS表記
 		ImGui::Text("SetBlock Num < %d / 256 >", nBlockSet); // 配置ブロック数
@@ -697,6 +709,7 @@ void DrawEditkey(void)
 	RECT rect12 = { 0,160,SCREEN_WIDTH,SCREEN_HEIGHT };
 	RECT rect13 = { 0,180,SCREEN_WIDTH,SCREEN_HEIGHT };
 
+	// 文字列
 	char aString5[128];
 	char aString6[128];
 	char aString7[128];
@@ -713,21 +726,22 @@ void DrawEditkey(void)
 	switch (Filenamepass)
 	{
 	case 0:
-		strcpy(aStFile, "data/stage000.bin");
+		strcpy(aStFile, "data/stage000.bin"); // 初期ファイル
 		break;
 
 	case 1:
-		strcpy(aStFile, "data/stage001.bin");
+		strcpy(aStFile, "data/stage001.bin"); // 2番目のファイル
 		break;
 
 	case 2:
-		strcpy(aStFile, "data/stage002.bin");
+		strcpy(aStFile, "data/stage002.bin"); // 3番目のファイル
 		break;
 
 	default:
 		break;
 	}
 
+	// 文字列を設定
 	wsprintf(&aString5[0], "[ F7 ] : ファイル書き出し  ***< %s >*** \n",&aStFile[0]);
 	wsprintf(&aString6[0], "[ F1 ] / [ F2 ] : モード切り替え \n");
 	wsprintf(&aString7[0], "[ F3 ] / [ F4 ] : ワイヤーフレーム切り替え\n");
@@ -737,6 +751,7 @@ void DrawEditkey(void)
 	wsprintf(&aString12[0],"[ F9 ] : 配置情報の再読み込み \n");
 	wsprintf(&aString13[0],"[ F10 ] / [ F11 ] : 自動旋回切り替え ( プレイモード時 ) \n");
 
+	// フォントの表示
 	g_pFont->DrawText(NULL, &aString5[0], -1, &rect5, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString6[0], -1, &rect6, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString7[0], -1, &rect7, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
@@ -768,7 +783,7 @@ void DrawCameraPos(void)
 	char aString4[64];
 	char aString5[64];
 
-	// 取得
+	// カメラの取得
 	Camera* pCamera = GetCamera();
 
 	// 文字列に代入
@@ -787,20 +802,6 @@ void DrawCameraPos(void)
 	g_pFont->DrawText(NULL, &aString4[0], -1, &rect4, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString5[0], -1, &rect5, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 
-}
-//======================
-//デバイスの取得
-//======================
-LPDIRECT3DDEVICE9 GetDevice(void)
-{
-	return g_pD3DDevice;
-}
-//====================
-//モードの取得
-//====================
-MODE GetMode(void)
-{
-	return g_mode; // 変数を返す
 }
 //============================
 // エディターモデル関係の表示
@@ -866,7 +867,7 @@ void DrawNumBlock()
 
 	// 文字列に代入
 	wsprintf(&aString[0], "[ 配置したモデル数 ] < %d / 256 >\n", nBlockSet);
-	
+
 	// テキスト描画
 	g_pFont->DrawText(NULL, &aString[0], -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 }
@@ -897,7 +898,7 @@ void DrawModeChange()
 	wsprintf(&aString[0], "現在のモード < %s >\n", &aString1[0]);
 
 	// フォントの表示
-	g_pFont->DrawText(NULL, &aString[0], -1, &rect, DT_RIGHT, D3DCOLOR_RGBA(255, 255,255, 255));
+	g_pFont->DrawText(NULL, &aString[0], -1, &rect, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
 
 }
 //============================
@@ -926,9 +927,9 @@ void DrawEditMove()
 
 	// 文字列に代入
 	sprintf(&aString[0], "[ 配置時の移動量 ] : <   %.2f  >\n", fspeed);
-	sprintf(&aString1[0],"[ 読み込む種類数 ] : < %d / 256 >\n", nType);
-	wsprintf(&aString2[0],"[ モーション ] : < motion.txt >\n");
-	sprintf(&aString3[0],"[ ジャンプの数値 ] : <   %.2f  >\n", fjumpmove);
+	sprintf(&aString1[0], "[ 読み込む種類数 ] : < %d / 256 >\n", nType);
+	wsprintf(&aString2[0], "[ モーション ] : < motion.txt >\n");
+	sprintf(&aString3[0], "[ ジャンプの数値 ] : <   %.2f  >\n", fjumpmove);
 	wsprintf(&aString4[0], "----- 読み込み情報 [ model.txt ] -----\n");
 
 
@@ -949,7 +950,7 @@ void DrawPlayerPos()
 	PLAYER* pPlayer = GetPlayer();
 
 	// ローカル変数
-	RECT rect =  { 0,200,SCREEN_WIDTH,SCREEN_HEIGHT };
+	RECT rect = { 0,200,SCREEN_WIDTH,SCREEN_HEIGHT };
 	RECT rect1 = { 0,220,SCREEN_WIDTH,SCREEN_HEIGHT };
 	RECT rect2 = { 0,240,SCREEN_WIDTH,SCREEN_HEIGHT };
 	RECT rect3 = { 0,260,SCREEN_WIDTH,SCREEN_HEIGHT };
@@ -972,6 +973,20 @@ void DrawPlayerPos()
 	g_pFont->DrawText(NULL, &aString2[0], -1, &rect2, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	g_pFont->DrawText(NULL, &aString3[0], -1, &rect3, DT_RIGHT, D3DCOLOR_RGBA(255, 255, 255, 255));
 
+}
+//======================
+// デバイスの取得
+//======================
+LPDIRECT3DDEVICE9 GetDevice(void)
+{
+	return g_pD3DDevice;
+}
+//====================
+// モードの取得
+//====================
+MODE GetMode(void)
+{
+	return g_mode; // 現在のモードを返す
 }
 //=====================
 // ワイヤーフレームON
@@ -1017,6 +1032,9 @@ void ToggleFullscreen(HWND hWnd)
 	g_isFullscreen = !g_isFullscreen;
 }
 
+//==========================================
+// imguiウィンドウの生成処理
+//==========================================
 bool CreateDeviceD3D(HWND hWnd)
 {
 	if ((g_pD3D = Direct3DCreate9(D3D_SDK_VERSION)) == nullptr)
@@ -1036,13 +1054,17 @@ bool CreateDeviceD3D(HWND hWnd)
 
 	return true;
 }
-
+//==========================================
+// imguiウィンドウの終了処理
+//==========================================
 void CleanupDeviceD3D()
 {
 	if (g_pD3DDevice) { g_pD3DDevice->Release(); g_pD3DDevice = nullptr; }
 	if (g_pD3D) { g_pD3D->Release(); g_pD3D = nullptr; }
 }
-
+//==========================================
+// imguiウィンドウの再初期化処理
+//==========================================
 void ResetDevice()
 {
 	ImGui_ImplDX9_InvalidateDeviceObjects();

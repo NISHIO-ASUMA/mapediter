@@ -52,7 +52,7 @@ bool isLoad;						 // ロードしたかどうか
 //****************************
 // プロトタイプ宣言
 //****************************
-void InitEditinfo(); // 構造体初期化
+void InitEditinfo(); // 構造体初期化情報
 
 //============================
 // マップエディター初期化処理
@@ -283,7 +283,6 @@ void UpdateMapEdit()
 			{// 下限を設定
 				g_MapEdit[g_Edit].mapedit.Scal.z = 0.1f;
 			}
-
 		}
 
 		if (KeyboardTrigger(DIK_RETURN))
