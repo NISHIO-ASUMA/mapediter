@@ -16,24 +16,21 @@
     <Filter Include="imgui">
       <UniqueIdentifier>{59089159-4505-4d1d-841c-dacc8b197e02}</UniqueIdentifier>
     </Filter>
+    <Filter Include="obj">
+      <UniqueIdentifier>{596ce305-8be3-44ad-8b42-e02ffd52a58d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tool">
+      <UniqueIdentifier>{400461be-c696-4f62-b11a-b2bacbe2780a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base">
+      <UniqueIdentifier>{903c6dea-0c0d-42c5-8a9a-c051e2c3b9ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="block.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="camera.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="input.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="light.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="mapedit.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="meshfield.cpp">
@@ -43,12 +40,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="model.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="fade.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="imgui.cpp">
@@ -72,27 +63,30 @@
     <ClCompile Include="imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
+    <ClCompile Include="block.cpp">
+      <Filter>obj</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>obj</Filter>
+    </ClCompile>
+    <ClCompile Include="mapedit.cpp">
+      <Filter>tool</Filter>
+    </ClCompile>
+    <ClCompile Include="fade.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="light.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
     <ClCompile Include="mouse.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="block.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="input.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="light.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="main.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="mapedit.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="meshfield.h">
@@ -102,12 +96,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="player.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="model.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="fade.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="imconfig.h">
@@ -134,8 +122,29 @@
     <ClInclude Include="imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
+    <ClInclude Include="block.h">
+      <Filter>obj</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>obj</Filter>
+    </ClInclude>
+    <ClInclude Include="mapedit.h">
+      <Filter>tool</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="fade.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>base</Filter>
+    </ClInclude>
     <ClInclude Include="mouse.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -751,6 +751,7 @@ void UpdateMotionPlayer(void)
 	}
 
 }
+
 //=====================================
 // プレイヤーのモデル読み込み処理
 //=====================================
@@ -760,7 +761,6 @@ void LoadModel(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
 	// ローカル変数
-	int nModel = 0;					// モデル数
 	int nIdx = 0;					// インデックス
 	int NumKey = 0;					// キー数
 	int nCnt = 0;					// モデルカウント用
@@ -774,7 +774,7 @@ void LoadModel(void)
 	FILE* pFile;
 
 	// ファイルを開く
-	pFile = fopen("data/motion.txt","r");
+	pFile = fopen("data/motion.txt", "r");
 
 	if (pFile != NULL)
 	{//　NULL じゃない
@@ -791,7 +791,7 @@ void LoadModel(void)
 				{
 					// 読み飛ばし
 					fscanf(pFile, "%s", &aString[0]);
-					
+
 					if (strcmp(&aString[0], "NUM_MODEL") == 0)
 					{// NUM_MODELを読み取ったら
 						fscanf(pFile, "%s", &aString[0]);
@@ -802,7 +802,7 @@ void LoadModel(void)
 						}
 					}
 
-					else if (strcmp(&aString[0], "MODEL_FILENAME") == 0) 
+					else if (strcmp(&aString[0], "MODEL_FILENAME") == 0)
 					{
 						// MODEL_FILENAMEを読み取ったら
 						fscanf(pFile, "%s", &aString[0]);
@@ -921,30 +921,30 @@ void LoadModel(void)
 					}
 					else if (strcmp(&aString[0], "MOTIONSET") == 0)
 					{// MOTIONSETを読み取ったら
-						
-					
+
+
 						while (1)
 						{
 							// 文字を読み飛ばす
 							fscanf(pFile, "%s", &aString[0]);
-					
+
 							if (strcmp(aString, "LOOP") == 0)
 							{// LOOP を読み取ったら
 								// 文字を読み飛ばす
 								fscanf(pFile, "%s", &aString[0]);
-					
+
 								if (strcmp(&aString[0], "=") == 0)
 								{// = を読み取ったら
 									// 値を代入
 									fscanf(pFile, "%d", &g_Player.aMotionInfo[nCntMotion].bLoop);
 								}
 							}
-					
+
 							else if (strcmp(aString, "NUM_KEY") == 0)
 							{// NUM_KEYを読み取ったら
 								// 文字を読み飛ばす
 								fscanf(pFile, "%s", &aString[0]);
-					
+
 								if (strcmp(&aString[0], "=") == 0)
 								{// = を読み取ったら
 									// 値を代入
@@ -1040,7 +1040,7 @@ void LoadModel(void)
 
 								}
 							}
-					
+
 							if (strcmp(&aString[0], "END_MOTIONSET") == 0)
 							{// END_MOTIONSETを読み取ったら
 								nCntMotion++;		// モーションの更新
@@ -1067,8 +1067,7 @@ void LoadModel(void)
 			}
 		}// while文末
 	}
- }
-
+}
 //=========================
 // ライフバーの初期化処理
 //=========================
@@ -1116,7 +1115,7 @@ void LoadModel(void)
 		 pVtx[0].pos = D3DXVECTOR3(15.0f, 5.0f, 0.0f);							// 1つ目の頂点情報
 		 pVtx[1].pos = D3DXVECTOR3(15.0f + (g_Player.nLife * 40), 5.0f, 0.0f);	// 2つ目の頂点情報
 		 pVtx[2].pos = D3DXVECTOR3(15.0f, 55.0f, 0.0f);							// 3つ目の頂点情報
-		 pVtx[3].pos = D3DXVECTOR3(15.0f + (g_Player.nLife * 40), 55.0f, 0.0f);// 4つ目の頂点情報
+		 pVtx[3].pos = D3DXVECTOR3(15.0f + (g_Player.nLife * 40), 55.0f, 0.0f); // 4つ目の頂点情報
 
 		 // rhwの設定(1.0fで固定)
 		 pVtx[0].rhw = 1.0f;
