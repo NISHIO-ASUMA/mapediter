@@ -48,7 +48,7 @@ const char* BLOCK_FILENAME[BLOCKPASS_MAX] =
 BlockInfo g_Block[MAX_BLOCK];		// 構造体変数
 BlockModel g_pBlock[MAX_TEXTURE];   // ブロック情報を持つ配列
 int g_BlockPass;					// パスを保存する変数
-bool isFrame;
+bool isFrame;						// 当たり判定の表示フレーム
 
 //*****************************
 // プロトタイプ宣言
@@ -71,6 +71,7 @@ void InitBlock(void)
 		g_Block[nCnt].aBlock.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 座標
 		g_Block[nCnt].aBlock.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 角度
 		g_Block[nCnt].aBlock.Scal = D3DXVECTOR3(1.0f, 1.0f, 1.0f);  // 拡大率
+		g_Block[nCnt].aBlock.bCollision = true; // 初期状態は判定を有効に
 	}
 
 	// グローバル変数の初期化
@@ -216,75 +217,77 @@ void CollisionBlock(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove,
 		// タイプを取得
 		int nType = g_Block[nCnt].aBlock.nType;
 
-		if (pPos->y < g_Block[nCnt].aBlock.pos.y + (g_pBlock[nType].size.y) * (g_Block[nCnt].aBlock.Scal.y) &&
-			pPos->y + pSize->y > g_Block[nCnt].aBlock.pos.y - (g_pBlock[nType].size.y) * g_Block[nCnt].aBlock.Scal.y)
-		{
-			// 左右の当たり判定----------------------
-			if (pPosOld->z - pSize->z * HALF < g_Block[nCnt].aBlock.pos.z + (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z) &&
-				pPos->z + pSize->z * HALF > g_Block[nCnt].aBlock.pos.z - ((g_pBlock[nType].size.z) * HALF) * (g_Block[nCnt].aBlock.Scal.z))
+		if (g_Block[nCnt].aBlock.bCollision)
+		{// 判定が有効の時のみ
+			if (pPos->y < g_Block[nCnt].aBlock.pos.y + (g_pBlock[nType].size.y) * (g_Block[nCnt].aBlock.Scal.y) &&
+				pPos->y + pSize->y > g_Block[nCnt].aBlock.pos.y - (g_pBlock[nType].size.y) * g_Block[nCnt].aBlock.Scal.y)
 			{
-				// 左からめり込む
-				if (pPosOld->x + pSize->x * HALF < g_Block[nCnt].aBlock.pos.x - (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x)&&
-					pPos->x + pSize->x * HALF > g_Block[nCnt].aBlock.pos.x - (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) )
+				// 左右の当たり判定----------------------
+				if (pPosOld->z - pSize->z * HALF < g_Block[nCnt].aBlock.pos.z + (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z) &&
+					pPos->z + pSize->z * HALF > g_Block[nCnt].aBlock.pos.z - ((g_pBlock[nType].size.z) * HALF) * (g_Block[nCnt].aBlock.Scal.z))
 				{
-					pPos->x = g_Block[nCnt].aBlock.pos.x - (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) - pSize->x * HALF - 0.1f;
-
-				}
-				// 右からめり込む
-				else if (pPosOld->x - pSize->x * HALF > g_Block[nCnt].aBlock.pos.x + (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) &&
-					pPos->x - pSize->x * HALF < g_Block[nCnt].aBlock.pos.x + (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) )
-				{
-					pPos->x = g_Block[nCnt].aBlock.pos.x + (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) + pSize->x * HALF + 0.1f;
-				}
-			}
-
-			// 前後の当たり判定------------------------------
-			if (pPosOld->x - pSize->z * HALF < g_Block[nCnt].aBlock.pos.x + (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x)  &&
-				pPos->x + pSize->x * HALF > g_Block[nCnt].aBlock.pos.x - (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) )
-			{
-				// 手前からめり込む
-				if (pPosOld->z + pSize->z * HALF < g_Block[nCnt].aBlock.pos.z - (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z) &&
-					pPos->z + pSize->z * HALF > g_Block[nCnt].aBlock.pos.z - (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z) )
-				{
-					pPos->z = g_Block[nCnt].aBlock.pos.z - (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z)  - pSize->z * HALF - 0.3f;
-
-				}
-				// 奥からめり込む
-				else if (pPosOld->z - pSize->z * HALF > g_Block[nCnt].aBlock.pos.z + (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z)  &&
-					pPos->z - pSize->z * HALF < g_Block[nCnt].aBlock.pos.z + (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z) )
-				{
-					pPos->z = g_Block[nCnt].aBlock.pos.z + (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z)  + pSize->z * HALF + 0.3f;
-
-				}
-			}
-
-			// 縦の当たり判定--------------------------
-			if (pPos->x - pSize->x * HALF < g_Block[nCnt].aBlock.pos.x + (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) &&
-				pPos->x + pSize->x * HALF > g_Block[nCnt].aBlock.pos.x - (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x))
-			{
-				if (pPosOld->z - pSize->z * HALF < g_Block[nCnt].aBlock.pos.z + (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z)  &&
-					pPos->z + pSize->z * HALF > g_Block[nCnt].aBlock.pos.z - (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z))
-				{
-					// 上からめり込んだ時
-					if (pPosOld->y >= g_Block[nCnt].aBlock.pos.y + (g_pBlock[nType].size.y * HALF) * (g_Block[nCnt].aBlock.Scal.y)  &&
-						pPos->y < g_Block[nCnt].aBlock.pos.y + (g_pBlock[nType].size.y * HALF) * (g_Block[nCnt].aBlock.Scal.y) )
+					// 左からめり込む
+					if (pPosOld->x + pSize->x * HALF < g_Block[nCnt].aBlock.pos.x - (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) &&
+						pPos->x + pSize->x * HALF > g_Block[nCnt].aBlock.pos.x - (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x))
 					{
-						pPlayer->bLanding = true;	// ジャンプ
-						pPos->y = (g_Block[nCnt].aBlock.pos.y + (g_pBlock[nType].size.y * HALF) * (g_Block[nCnt].aBlock.Scal.y) );
-						pMove->y = 0.0f;
+						pPos->x = g_Block[nCnt].aBlock.pos.x - (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) - pSize->x * HALF - 0.1f;
 
 					}
-					// 下からめり込んだ時
-					else if (pPosOld->y + pSize->y <= g_Block[nCnt].aBlock.pos.y - (g_pBlock[nType].size.y * HALF) * (g_Block[nCnt].aBlock.Scal.y)  &&
-						pPos->y + pSize->y > g_Block[nCnt].aBlock.pos.y - (g_pBlock[nType].size.y * HALF) * (g_Block[nCnt].aBlock.Scal.y) )
+					// 右からめり込む
+					else if (pPosOld->x - pSize->x * HALF > g_Block[nCnt].aBlock.pos.x + (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) &&
+						pPos->x - pSize->x * HALF < g_Block[nCnt].aBlock.pos.x + (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x))
 					{
-						pPos->y = (g_Block[nCnt].aBlock.pos.y - (g_pBlock[nType].size.y) * (g_Block[nCnt].aBlock.Scal.y)) - pSize->y * HALF;
-						pMove->y = 0.0f;
+						pPos->x = g_Block[nCnt].aBlock.pos.x + (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) + pSize->x * HALF + 0.1f;
+					}
+				}
+
+				// 前後の当たり判定------------------------------
+				if (pPosOld->x - pSize->z * HALF < g_Block[nCnt].aBlock.pos.x + (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) &&
+					pPos->x + pSize->x * HALF > g_Block[nCnt].aBlock.pos.x - (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x))
+				{
+					// 手前からめり込む
+					if (pPosOld->z + pSize->z * HALF < g_Block[nCnt].aBlock.pos.z - (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z) &&
+						pPos->z + pSize->z * HALF > g_Block[nCnt].aBlock.pos.z - (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z))
+					{
+						pPos->z = g_Block[nCnt].aBlock.pos.z - (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z) - pSize->z * HALF - 0.3f;
+
+					}
+					// 奥からめり込む
+					else if (pPosOld->z - pSize->z * HALF > g_Block[nCnt].aBlock.pos.z + (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z) &&
+						pPos->z - pSize->z * HALF < g_Block[nCnt].aBlock.pos.z + (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z))
+					{
+						pPos->z = g_Block[nCnt].aBlock.pos.z + (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z) + pSize->z * HALF + 0.3f;
+
+					}
+				}
+
+				// 縦の当たり判定--------------------------
+				if (pPos->x - pSize->x * HALF < g_Block[nCnt].aBlock.pos.x + (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x) &&
+					pPos->x + pSize->x * HALF > g_Block[nCnt].aBlock.pos.x - (g_pBlock[nType].size.x * HALF) * (g_Block[nCnt].aBlock.Scal.x))
+				{
+					if (pPosOld->z - pSize->z * HALF < g_Block[nCnt].aBlock.pos.z + (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z) &&
+						pPos->z + pSize->z * HALF > g_Block[nCnt].aBlock.pos.z - (g_pBlock[nType].size.z * HALF) * (g_Block[nCnt].aBlock.Scal.z))
+					{
+						// 上からめり込んだ時
+						if (pPosOld->y >= g_Block[nCnt].aBlock.pos.y + (g_pBlock[nType].size.y * HALF) * (g_Block[nCnt].aBlock.Scal.y) &&
+							pPos->y < g_Block[nCnt].aBlock.pos.y + (g_pBlock[nType].size.y * HALF) * (g_Block[nCnt].aBlock.Scal.y))
+						{
+							pPlayer->bLanding = true;	// ジャンプ
+							pPos->y = (g_Block[nCnt].aBlock.pos.y + (g_pBlock[nType].size.y * HALF) * (g_Block[nCnt].aBlock.Scal.y));
+							pMove->y = 0.0f;
+
+						}
+						// 下からめり込んだ時
+						else if (pPosOld->y + pSize->y <= g_Block[nCnt].aBlock.pos.y - (g_pBlock[nType].size.y * HALF) * (g_Block[nCnt].aBlock.Scal.y) &&
+							pPos->y + pSize->y > g_Block[nCnt].aBlock.pos.y - (g_pBlock[nType].size.y * HALF) * (g_Block[nCnt].aBlock.Scal.y))
+						{
+							pPos->y = (g_Block[nCnt].aBlock.pos.y - (g_pBlock[nType].size.y) * (g_Block[nCnt].aBlock.Scal.y)) - pSize->y * HALF;
+							pMove->y = 0.0f;
+						}
 					}
 				}
 			}
 		}
-
 	}
 }
 //=============================

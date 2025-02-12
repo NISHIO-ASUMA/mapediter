@@ -342,6 +342,17 @@ void UpdateMapEdit()
 			isLoad = true;
 		}
 
+		if (KeyboardTrigger(DIK_C))
+		{
+			g_MapEdit[g_Edit].mapedit.bCollision = false;
+		}
+		else if (KeyboardTrigger(DIK_Z))
+		{
+			g_MapEdit[g_Edit].mapedit.bCollision = true;
+
+		}
+
+
 		// ˆÚ“®—Ê‚ÌŒ¸Š
 		g_MapEdit[g_Edit].mapedit.move.x += (0.0f - g_MapEdit[g_Edit].mapedit.move.x) * 0.5f;
 		g_MapEdit[g_Edit].mapedit.move.z += (0.0f - g_MapEdit[g_Edit].mapedit.move.z) * 0.5f;
@@ -788,5 +799,6 @@ void InitEditinfo()
 		g_MapEdit[nCnt].mapedit.nType = 0;							  // í—Ş
 		g_MapEdit[nCnt].isputblock = false;					          // ”z’u‚³‚ê‚½‚©
 		g_MapEdit[nCnt].mapedit.Scal = D3DXVECTOR3(1.0f, 1.0f, 1.0f); // Šg‘å—¦
+		g_MapEdit[nCnt].mapedit.bCollision = true;					  // ‰Šúó‘Ô‚ğ—LŒø”»’è‚É‚·‚é
 	}
 }

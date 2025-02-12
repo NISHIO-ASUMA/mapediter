@@ -637,7 +637,7 @@ void Draw(void)
 		//DrawCameraPos();
 
 		//// 各種キーの種類
-		//DrawEditkey();
+		DrawEditkey();
 
 		//// 配置数の表示
 		//DrawNumBlock();
@@ -697,9 +697,13 @@ void DrawEditkey(void)
 	char aString12[128];
 	char aString13[128];
 	char aStFile[64];
+	char aStColl[64];
 
 	// ファイルパスを取得
 	Filenamepass = Filepass();
+
+	int nModel = ReturnEdit(); // 配置カウント
+	MAPMODELINFO* pEdit = MapInfo(); // 配置時の情報
 
 	switch (Filenamepass)
 	{
@@ -719,12 +723,23 @@ void DrawEditkey(void)
 		break;
 	}
 
+	// 文字列に代入
+	if (pEdit[nModel].mapedit.bCollision)
+	{// 有効ならなら
+		strcpy(aStColl, "有効");
+	}
+	else if (!pEdit[nModel].mapedit.bCollision)
+	{// 無効なら
+		strcpy(aStColl, "無効");
+	}
+
+
 	// 文字列を設定
 	wsprintf(&aString5[0], "[ F7 ] : ファイル書き出し  ***< %s >*** \n",&aStFile[0]);
 	wsprintf(&aString6[0], "[ F1 ] / [ F2 ] : モード切り替え \n");
 	wsprintf(&aString7[0], "[ F3 ] / [ F4 ] : ワイヤーフレーム切り替え\n");
 	wsprintf(&aString8[0], "[ F5 ] / [ F6 ] : 当たり判定描画切り替え ( プレイモード時 )\n");
-	wsprintf(&aString10[0]," CollisionBlock判定  [ 有効 ]\n");
+	wsprintf(&aString10[0]," CollisionBlock判定  [ %s ]\n",&aStColl[0]);
 	wsprintf(&aString11[0],"[ F8 ] : 書き出すファイルパスを切り替え \n");
 	wsprintf(&aString12[0],"[ F9 ] : 配置情報の再読み込み \n");
 	wsprintf(&aString13[0],"[ F10 ] / [ F11 ] : 自動旋回切り替え ( プレイモード時 ) \n");

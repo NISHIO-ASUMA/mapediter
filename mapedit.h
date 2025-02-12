@@ -45,6 +45,7 @@ typedef struct
 	D3DXVECTOR3 move;	 // ˆÚ“®—Ê
 	int nType;		     // Ží—Þ
 	D3DXVECTOR3 Scal;	 // Šg‘å—¦
+	bool bCollision;     // “–‚½‚è”»’è‚ª‚ ‚é‚©‚Ç‚¤‚©
 }MapEdit;
 
 //***********************************
