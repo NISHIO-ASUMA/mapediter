@@ -187,7 +187,7 @@ void UpdateCamera(void)
 		isPlayer = false;
 	}
 
-	if (OnMouseTriggerDown(2))
+	if (OnMouseTriggerDown(2) || KeyboardTrigger(DIK_TAB))
 	{
 		InitCamera();
 	}

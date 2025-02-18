@@ -190,7 +190,7 @@ void UpdateMapEdit()
 			}
 		}
 
-		if (KeyboardTrigger(DIK_UP))
+		if (KeyboardTrigger(DIK_UP) && GetKeyboardPress(DIK_LSHIFT))
 		{// 上キーを押した
 			if (g_MapEdit[g_Edit].mapedit.nType < g_nTypeNum - 1)
 			{
@@ -198,7 +198,7 @@ void UpdateMapEdit()
 				g_MapEdit[g_Edit].mapedit.nType++;
 			}
 		}
-		else if (KeyboardTrigger(DIK_DOWN))
+		else if (KeyboardTrigger(DIK_DOWN) && GetKeyboardPress(DIK_LSHIFT))
 		{// 下キーを押した
 			if (g_MapEdit[g_Edit].mapedit.nType > 0)
 			{

@@ -64,6 +64,9 @@ void DrawCameraPos(void);			// カメラの座標表示
 void onWireFrame();					// ワイヤーフレーム起動
 void offWireFrame();				// ワイヤーフレーム終了
 void DrawNumBlock();				// ブロックのデバッグ表示
+void UpdateModelPosition(int modelIndex, D3DXVECTOR3 newPos); // 位置更新関数
+void UpdateModelScale(int modelIndex, D3DXVECTOR3 newScale);  // 拡大率情報
+void UpdateModelMatrix(int modelIndex);		// ワールドマトリックス
 
 //******************************
 // imguiのプロトタイプ宣言
@@ -72,6 +75,7 @@ bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void ResetDevice();
 void ImguiDrawData();
+void ImguiDrawModechange();
 
 //===============================
 // メイン関数
@@ -539,6 +543,12 @@ void Update(void)
 	// ブロックの更新処理
 	UpdateBlock();
 
+	if (g_mode == MODE_PLAY)
+	{// プレイ時のみ
+		// プレイヤーの更新
+		UpdatePlayer();
+	}
+
 	if (KeyboardTrigger(DIK_F3))
 	{// F3キー
 		// ワイヤーフレーム起動
@@ -550,29 +560,10 @@ void Update(void)
 		offWireFrame();
 	}
 
-	if (KeyboardTrigger(DIK_F1))
-	{// モード変更
-		g_mode = MODE_PLAY;
-
-		// モデル読み込み
-		LoadBlock();
-
-	}
-	else if (KeyboardTrigger(DIK_F2))
-	{// モード変更
-		g_mode = MODE_EDIT;
-	}
-
 	if (g_mode == MODE_EDIT)
 	{// 編集モードの時
 		// 更新
 		UpdateMapEdit();
-	}
-
-	if (g_mode == MODE_PLAY)
-	{// プレイモードの時
-		// プレイヤーの更新
-		UpdatePlayer();
 	}
 }
 //===================
@@ -603,13 +594,11 @@ void Draw(void)
 		// メッシュの描画
 		DrawMeshField();
 
+
 		if (g_mode == MODE_EDIT)
 		{
 			// エディター画面
 			DrawMapEdit();
-
-			// Guiウィンドウ
-			ImguiDrawData();
 		}
 
 		if (g_mode == MODE_PLAY)
@@ -637,7 +626,7 @@ void Draw(void)
 		//DrawCameraPos();
 
 		//// 各種キーの種類
-		DrawEditkey();
+		// DrawEditkey();
 
 		//// 配置数の表示
 		//DrawNumBlock();
@@ -650,6 +639,10 @@ void Draw(void)
 
 		//// エディターモデル情報の表示
 		//DebugEditModelInfo();
+		
+		// Guiウィンドウ
+		ImguiDrawData();
+
 		// 描画終了
 		g_pD3DDevice->EndScene();
 	}
@@ -1084,7 +1077,7 @@ void ImguiDrawData()
 	MAPMODELINFO* pEdit = MapInfo(); // 配置時の情報
 	EDITMODEL* pModelEdit = GetBlockInfo(pEdit[nModel].mapedit.nType); // モデル情報
 	Camera* pCamera = GetCamera(); // カメラ
-	Filenamepass = Filepass(); 	// ファイルパスを取得
+	Filenamepass = Filepass(); // ファイルパスを取得
 
 	// 文字列
 	char aStFile[256];
@@ -1095,58 +1088,156 @@ void ImguiDrawData()
 	case 0:
 		strcpy(aStFile, "data/stage000.bin"); // 初期ファイル
 		break;
-
 	case 1:
 		strcpy(aStFile, "data/stage001.bin"); // 2番目のファイル
 		break;
-
 	case 2:
 		strcpy(aStFile, "data/stage002.bin"); // 3番目のファイル
 		break;
-
 	default:
 		break;
 	}
-
-	// フラグ変数（グローバルまたは静的変数として定義）
-	static bool showPlayerInfo = true; // プレイヤー
-	static bool showModelInfo = true;  // モデル情報
-	static bool showLoadinfo = true;   // モデルテキスト情報
 
 	// フレーム開始
 	ImGui_ImplDX9_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::Begin("tool_Window"); // メインウィンドウ生成
-	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / (float)g_nCountFPS, (float)g_nCountFPS); // FPS表記
+	//==============================
+	// メインの ImGui ウィンドウ
+	//==============================
+	ImGui::Begin("Debug & Mode Selector");
 
-	// チェックボックスで表示の切り替え
-	ImGui::Checkbox("Show Player Info", &showPlayerInfo);
+	// FPS 表示
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+		1000.0f / (float)g_nCountFPS, (float)g_nCountFPS);
 
-	ImGui::Checkbox("Show Model Info", &showModelInfo);
-
-	ImGui::Checkbox("Show Load Info", &showLoadinfo);
-
-	if (showPlayerInfo)
+	// モード選択
+	if (ImGui::CollapsingHeader("Mode Selector"))
 	{
-		ImGui::Text("Player Pos < %.2f,%.2f,%.2f >", GetPlayer()->pos.x, GetPlayer()->pos.y, GetPlayer()->pos.z); // プレイヤー座標
-	}
-	if (showModelInfo)
-	{
-		ImGui::Text("SetBlock Num < %d / 256 >", ReturnEdit()); // 配置ブロック数
-		ImGui::Text("FilePass < %s >", &aStFile[0]); // ファイルパス
-		ImGui::Text("Model_Pos < %.2f,%.2f,%.2f >", pEdit[nModel].mapedit.pos.x, pEdit[nModel].mapedit.pos.y, pEdit[nModel].mapedit.pos.z); // モデル座標
-		ImGui::Text("Model_Scal < %.2f,%.2f,%.2f >", pEdit[nModel].mapedit.Scal.x, pEdit[nModel].mapedit.Scal.y, pEdit[nModel].mapedit.Scal.z); // モデルスケール
-	}
-	if (showLoadinfo)
-	{
-		ImGui::Text("AllBlockType < %d / 256 >", ReturnType()); // 種類数
+		bool isEditMode = (g_mode == MODE_EDIT);
 
-	}
-	ImGui::End();	// ウィンドウの終了
+		if (ImGui::Checkbox("Edit Mode", &isEditMode))
+		{
+			g_mode = isEditMode ? MODE_EDIT : MODE_PLAY;
+			if (g_mode == MODE_PLAY)
+			{
+				LoadBlock(); // モデル読み込み
+			}
+		}
 
-	ImGui::Render(); // レンダリング
+		ImGui::Text("Now Mode: %s", (g_mode == MODE_EDIT) ? "EDIT" : "PLAY");
+	}
+
+	// モデル情報
+	if (ImGui::CollapsingHeader("Model Info"))
+	{
+		ImGui::Text("SetBlock Num: %d / 256", ReturnEdit()); // 配置数
+		ImGui::Text("FilePass: %s", aStFile); // ファイルパス
+
+		// モデルの位置を変更可能にする
+		ImGui::Text("Model Position"); // 座標
+
+		if (ImGui::InputFloat("Pos X", &pEdit[nModel].mapedit.pos.x, 0.1f, 1000.0f, "%.2f"))
+		{
+			UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
+		}
+		if (ImGui::InputFloat("Pos Y", &pEdit[nModel].mapedit.pos.y, 0.1f, 1000.0f, "%.2f"))
+		{
+			UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
+
+		}
+		if (ImGui::InputFloat("Pos Z", &pEdit[nModel].mapedit.pos.z, 0.1f, 1000.0f, "%.2f"))
+		{
+			UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
+
+		}
+
+		// モデルのスケールを変更可能にする
+		ImGui::Text("Model Scale");
+
+		if (ImGui::InputFloat("Scale X", &pEdit[nModel].mapedit.Scal.x, 0.1f, 2.0f, "%.2f"))
+		{
+			UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
+		}
+		if (ImGui::InputFloat("Scale Y", &pEdit[nModel].mapedit.Scal.y, 0.1f, 2.0f, "%.2f"))
+		{
+			UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
+
+		}
+		if (ImGui::InputFloat("Scale Z", &pEdit[nModel].mapedit.Scal.z, 0.1f, 2.0f, "%.2f"))
+		{
+			UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
+
+		}
+	}
+
+	// 種類
+	if (ImGui::CollapsingHeader("Block Info"))
+	{
+		ImGui::Text("AllBlockType: %d / 256", ReturnType());
+	}
+
+	ImGui::End();
+
+	// レンダリング処理
+	ImGui::Render();
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+}
+void UpdateModelPosition(int modelIndex, D3DXVECTOR3 newPos)
+{
+	MAPMODELINFO* pEdit = MapInfo();
 
+	pEdit[modelIndex].mapedit.pos = newPos;
+
+	// もしモデルのワールドマトリクスを更新する必要がある場合
+	UpdateModelMatrix(modelIndex);
+}
+void UpdateModelScale(int modelIndex, D3DXVECTOR3 newScale)
+{
+	MAPMODELINFO* pEdit = MapInfo();
+
+	pEdit[modelIndex].mapedit.Scal = newScale;
+
+	// 拡大率制限
+	if (pEdit[modelIndex].mapedit.Scal.x >= 2.0f)
+	{
+		pEdit[modelIndex].mapedit.Scal.x = 2.0f;
+	}
+	if (pEdit[modelIndex].mapedit.Scal.y >= 2.0f)
+	{								   
+		pEdit[modelIndex].mapedit.Scal.y = 2.0f;
+	}
+	if (pEdit[modelIndex].mapedit.Scal.z >= 2.0f)
+	{								   
+		pEdit[modelIndex].mapedit.Scal.z = 2.0f;
+	}
+
+	// ワールドマトリクス更新
+	UpdateModelMatrix(modelIndex);
+}
+void UpdateModelMatrix(int modelIndex)
+{
+	MAPMODELINFO* pEdit = MapInfo();
+
+	// D3DXMatrixTransformation を使ってワールドマトリクスを更新
+	D3DXMATRIX matScale, matTranslate, matWorld;
+
+	// 拡大率
+	D3DXMatrixScaling(&matScale,
+		pEdit[modelIndex].mapedit.Scal.x,
+		pEdit[modelIndex].mapedit.Scal.y,
+		pEdit[modelIndex].mapedit.Scal.z);
+
+	// 位置
+	D3DXMatrixTranslation(&matTranslate,
+		pEdit[modelIndex].mapedit.pos.x,
+		pEdit[modelIndex].mapedit.pos.y,
+		pEdit[modelIndex].mapedit.pos.z);
+
+	// ワールドマトリクスの更新
+	matWorld = matScale * matTranslate;
+
+	// インデックス番号のワールドマトリックス
+	pEdit[modelIndex].mapedit.mtxWorld = matWorld;
 }
