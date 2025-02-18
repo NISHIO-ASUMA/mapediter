@@ -65,7 +65,7 @@ void onWireFrame();					// ワイヤーフレーム起動
 void offWireFrame();				// ワイヤーフレーム終了
 void DrawNumBlock();				// ブロックのデバッグ表示
 void UpdateModelPosition(int modelIndex, D3DXVECTOR3 newPos); // 位置更新関数
-void UpdateModelScale(int modelIndex, D3DXVECTOR3 newScale);  // 拡大率情報
+void UpdateModelScale(int modelIndex, D3DXVECTOR3 newScale);  // 拡大率更新関数
 void UpdateModelMatrix(int modelIndex);		// ワールドマトリックス
 
 //******************************
@@ -75,7 +75,6 @@ bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void ResetDevice();
 void ImguiDrawData();
-void ImguiDrawModechange();
 
 //===============================
 // メイン関数
@@ -1138,16 +1137,16 @@ void ImguiDrawData()
 		// モデルの位置を変更可能にする
 		ImGui::Text("Model Position"); // 座標
 
-		if (ImGui::InputFloat("Pos X", &pEdit[nModel].mapedit.pos.x, 0.1f, 1000.0f, "%.2f"))
+		if (ImGui::InputFloat("Pos X", &pEdit[nModel].mapedit.pos.x, 20.0f, 1000.0f, "%.2f"))
 		{
 			UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
 		}
-		if (ImGui::InputFloat("Pos Y", &pEdit[nModel].mapedit.pos.y, 0.1f, 1000.0f, "%.2f"))
+		if (ImGui::InputFloat("Pos Y", &pEdit[nModel].mapedit.pos.y, 20.0f, 1000.0f, "%.2f"))
 		{
 			UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
 
 		}
-		if (ImGui::InputFloat("Pos Z", &pEdit[nModel].mapedit.pos.z, 0.1f, 1000.0f, "%.2f"))
+		if (ImGui::InputFloat("Pos Z", &pEdit[nModel].mapedit.pos.z, 20.0f, 1000.0f, "%.2f"))
 		{
 			UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
 
@@ -1184,38 +1183,49 @@ void ImguiDrawData()
 	ImGui::Render();
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 }
+//=======================================
+// 座標更新用関数
+//=======================================
 void UpdateModelPosition(int modelIndex, D3DXVECTOR3 newPos)
 {
 	MAPMODELINFO* pEdit = MapInfo();
 
+	// 座標を代入する
 	pEdit[modelIndex].mapedit.pos = newPos;
 
 	// もしモデルのワールドマトリクスを更新する必要がある場合
 	UpdateModelMatrix(modelIndex);
 }
+//=======================================
+// 拡大率更新用関数
+//=======================================
 void UpdateModelScale(int modelIndex, D3DXVECTOR3 newScale)
 {
 	MAPMODELINFO* pEdit = MapInfo();
 
+	// 拡大率を代入
 	pEdit[modelIndex].mapedit.Scal = newScale;
 
 	// 拡大率制限
 	if (pEdit[modelIndex].mapedit.Scal.x >= 2.0f)
-	{
+	{// X
 		pEdit[modelIndex].mapedit.Scal.x = 2.0f;
 	}
 	if (pEdit[modelIndex].mapedit.Scal.y >= 2.0f)
-	{								   
+	{// Y								   
 		pEdit[modelIndex].mapedit.Scal.y = 2.0f;
 	}
 	if (pEdit[modelIndex].mapedit.Scal.z >= 2.0f)
-	{								   
+	{// Z							   
 		pEdit[modelIndex].mapedit.Scal.z = 2.0f;
 	}
 
 	// ワールドマトリクス更新
 	UpdateModelMatrix(modelIndex);
 }
+//=======================================
+// ワールドマトリックス更新用関数
+//=======================================
 void UpdateModelMatrix(int modelIndex)
 {
 	MAPMODELINFO* pEdit = MapInfo();
