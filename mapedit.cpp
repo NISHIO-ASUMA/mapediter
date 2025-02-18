@@ -95,8 +95,7 @@ void UninitMapEdit()
 	UninitLight();
 
 	// テクスチャの破棄
-	for (int i = 0; i < MAX_TEXTURE; i++)
-	{
+	for (int i = 0; i < MAX_TEXTURE; i++)	{
 		for (int nCntMat = 0; nCntMat < (int)g_ModelInfo[i].dwNumMat; nCntMat++)
 		{
 			if (g_ModelInfo[i].pTexture[nCntMat] != NULL)
@@ -343,13 +342,12 @@ void UpdateMapEdit()
 		}
 
 		if (KeyboardTrigger(DIK_C))
-		{
+		{// 当たり判定切り替え
 			g_MapEdit[g_Edit].mapedit.bCollision = false;
 		}
 		else if (KeyboardTrigger(DIK_Z))
-		{
+		{// 当たり判定切り替え
 			g_MapEdit[g_Edit].mapedit.bCollision = true;
-
 		}
 
 

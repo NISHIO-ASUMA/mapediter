@@ -43,6 +43,7 @@ int g_nCountFPS = 0;					// FPSカウンタ
 int nGetNumber = 0;						// 番号
 int Filenamepass;						// ファイル名
 int nBlockSet = 0;						// 配置するブロック数
+LPDIRECT3DTEXTURE9 g_pModelIconTexture = NULL; // モデルアイコンのテクスチャ
 
 //*****************************
 // imguiグローバル変数宣言
@@ -67,6 +68,7 @@ void DrawNumBlock();				// ブロックのデバッグ表示
 void UpdateModelPosition(int modelIndex, D3DXVECTOR3 newPos); // 位置更新関数
 void UpdateModelScale(int modelIndex, D3DXVECTOR3 newScale);  // 拡大率更新関数
 void UpdateModelMatrix(int modelIndex);		// ワールドマトリックス
+void LoadModelIcon(LPDIRECT3DDEVICE9 pDevice, const char* filePath);
 
 //******************************
 // imguiのプロトタイプ宣言
@@ -489,6 +491,13 @@ void Uninit(void)
 
 	// プレイヤー
 	UninitPlayer();
+
+	// テクスチャの破棄
+	if (g_pModelIconTexture)
+	{
+		g_pModelIconTexture->Release();
+		g_pModelIconTexture = nullptr;
+	}
 
 	// デバッグ表示用のフォントの破棄
 	if (g_pFont != NULL)
@@ -1118,19 +1127,29 @@ void ImguiDrawData()
 
 		if (ImGui::Checkbox("Edit Mode", &isEditMode))
 		{
+
 			g_mode = isEditMode ? MODE_EDIT : MODE_PLAY;
+
 			if (g_mode == MODE_PLAY)
 			{
 				LoadBlock(); // モデル読み込み
 			}
 		}
 
+		LoadModelIcon(g_pD3DDevice, "data/TEXTURE/gold.jpg");
 		ImGui::Text("Now Mode: %s", (g_mode == MODE_EDIT) ? "EDIT" : "PLAY");
 	}
 
 	// モデル情報
 	if (ImGui::CollapsingHeader("Model Info"))
 	{
+		// モデルのサムネイルを表示
+		if (g_pModelIconTexture)
+		{
+			ImGui::Text("Model Icon:");
+			ImGui::Image((ImTextureID)g_pModelIconTexture, ImVec2(64, 64)); // 64x64ピクセルで描画
+		}
+
 		ImGui::Text("SetBlock Num: %d / 256", ReturnEdit()); // 配置数
 		ImGui::Text("FilePass: %s", aStFile); // ファイルパス
 
@@ -1250,4 +1269,15 @@ void UpdateModelMatrix(int modelIndex)
 
 	// インデックス番号のワールドマトリックス
 	pEdit[modelIndex].mapedit.mtxWorld = matWorld;
+}
+//==============================
+// モデルアイコンを読み込む関数
+//==============================
+void LoadModelIcon(LPDIRECT3DDEVICE9 pDevice, const char* filePath)
+{
+	// テクスチャの読み込み
+	if (FAILED(D3DXCreateTextureFromFile(pDevice, filePath, &g_pModelIconTexture)))
+	{
+		MessageBoxA(0, "モデルアイコンの読み込みに失敗しました", "Error", MB_OK);
+	}
 }
