@@ -1136,7 +1136,7 @@ void ImguiDrawData()
 			}
 		}
 
-		LoadModelIcon(g_pD3DDevice, "data/TEXTURE/gold.jpg");
+		// LoadModelIcon(g_pD3DDevice, "data/TEXTURE/gold.jpg");
 		ImGui::Text("Now Mode: %s", (g_mode == MODE_EDIT) ? "EDIT" : "PLAY");
 	}
 
