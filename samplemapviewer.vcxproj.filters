@@ -84,6 +84,9 @@
     <ClCompile Include="mouse.cpp">
       <Filter>base</Filter>
     </ClCompile>
+    <ClCompile Include="imgui_info.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -145,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="mouse.h">
       <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_info.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

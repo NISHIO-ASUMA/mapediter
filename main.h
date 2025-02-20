@@ -99,5 +99,8 @@ void Draw(void);																	//　描画処理
 LPDIRECT3DDEVICE9 GetDevice(void);													//　デバイスの取得
 MODE GetMode(void);																	//　モードの取得
 void DrawFPS(void);																	//　デバッグ表示
-																					  
+void UpdateModelPosition(int modelIndex, D3DXVECTOR3 newPos);
+void UpdateModelScale(int modelIndex, D3DXVECTOR3 newScale);
+void UpdateModelMatrix(int modelIndex);
+
 #endif

@@ -22,6 +22,7 @@
 #include "player.h"
 #include "block.h"
 #include "mouse.h"
+#include "imgui_info.h"
 
 //*********************************
 // imguiインクルードファイル宣言
@@ -216,11 +217,13 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 				// 更新処理
 				Update();
 
-				// 描画
-				ImguiDrawData();
+				// ImguiDrawData();
+
+				// 描画関数
+				DrawImguiInfo();
 
 				// ImGuiフレームの終了
-				ImGui::EndFrame();
+				EndImguiFrame();
 
 				// 描画処理
 				Draw();
@@ -441,18 +444,21 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// プレイヤー
 	InitPlayer();
 
-	// ====== ImGui 初期化 ======
-	IMGUI_CHECKVERSION(); // ImGui のバージョンチェック
-	ImGui::CreateContext(); // ImGui コンテキスト作成
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // キーボード入力有効化
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // ゲームパッド入力有効化
+	// Gui情報の初期化
+	InitImguiInfo(hWnd, g_pD3DDevice);
 
-	ImGui::StyleColorsLight(); // テーマ適用
+	//// ====== ImGui 初期化 ======
+	//IMGUI_CHECKVERSION(); // ImGui のバージョンチェック
+	//ImGui::CreateContext(); // ImGui コンテキスト作成
+	//ImGuiIO& io = ImGui::GetIO(); (void)io;
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // キーボード入力有効化
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // ゲームパッド入力有効化
 
-	// ImGui のバックエンド初期化（Win32 & DirectX9）
-	ImGui_ImplWin32_Init(hWnd);
-	ImGui_ImplDX9_Init(g_pD3DDevice);
+	//ImGui::StyleColorsLight(); // テーマ適用
+
+	//// ImGui のバックエンド初期化（Win32 & DirectX9）
+	//ImGui_ImplWin32_Init(hWnd);
+	//ImGui_ImplDX9_Init(g_pD3DDevice);
 
 	return S_OK; // 結果を返す
 
@@ -522,9 +528,8 @@ void Uninit(void)
 	}
 
 	// Imguiの破棄
-	ImGui_ImplDX9_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
+	UninitImguiInfo();
+
 }
 //===================
 // 更新処理
@@ -569,6 +574,21 @@ void Update(void)
 		offWireFrame();
 	}
 
+	if (KeyboardTrigger(DIK_F1))
+	{
+		g_mode = MODE_PLAY;
+		if (g_mode == MODE_PLAY)
+		{
+			LoadBlock(); // モデル読み込み
+		}
+	}
+
+	if (KeyboardTrigger(DIK_F2))
+	{
+		g_mode = MODE_EDIT;
+	}
+
+
 	if (g_mode == MODE_EDIT)
 	{// 編集モードの時
 		// 更新
@@ -608,6 +628,8 @@ void Draw(void)
 		{
 			// エディター画面
 			DrawMapEdit();
+
+
 		}
 
 		if (g_mode == MODE_PLAY)
@@ -622,35 +644,18 @@ void Draw(void)
 			DrawBlock();
 
 			// プレイヤー座標の描画
-			DrawPlayerPos();
+			// DrawPlayerPos();
 		}
 
-		//===========================
-		// 各種フォントの描画
-		//===========================
-		// キャプション
-		//DrawFPS();
+		// モードせってい
+		// ImguiDrawData();
 
-		//// カメラ表示
-		//DrawCameraPos();
+		if (g_mode == MODE_EDIT)
+		{
+			// Gui描画
+			DrawImguiInfo();
 
-		//// 各種キーの種類
-		// DrawEditkey();
-
-		//// 配置数の表示
-		//DrawNumBlock();
-
-		//// モード切替表示
-		//DrawModeChange();
-
-		//// テキスト読み込み情報の表示
-		//DrawEditMove();
-
-		//// エディターモデル情報の表示
-		//DebugEditModelInfo();
-		
-		// Guiウィンドウ
-		ImguiDrawData();
+		}
 
 		// 描画終了
 		g_pD3DDevice->EndScene();
@@ -1073,61 +1078,18 @@ void ResetDevice()
 //==========================================
 void ImguiDrawData()
 {
-	//================================
-	//  情報取得関係
-	//================================
-	PLAYER* pPlayer = GetPlayer(); // プレイヤー
-	MODE nMode = GetMode(); // 現在のモード
-
-	float fspeed = ReturnSpeed(); // 配置速度
-	int nType = ReturnType(); // 種類数
-	int nModel = ReturnEdit(); // 配置カウント
-
-	MAPMODELINFO* pEdit = MapInfo(); // 配置時の情報
-	EDITMODEL* pModelEdit = GetBlockInfo(pEdit[nModel].mapedit.nType); // モデル情報
-	Camera* pCamera = GetCamera(); // カメラ
-	Filenamepass = Filepass(); // ファイルパスを取得
-
-	// 文字列
-	char aStFile[256];
-
-	// ファイルパス
-	switch (Filenamepass)
-	{
-	case 0:
-		strcpy(aStFile, "data/stage000.bin"); // 初期ファイル
-		break;
-	case 1:
-		strcpy(aStFile, "data/stage001.bin"); // 2番目のファイル
-		break;
-	case 2:
-		strcpy(aStFile, "data/stage002.bin"); // 3番目のファイル
-		break;
-	default:
-		break;
-	}
-
+#if 1
 	// フレーム開始
-	ImGui_ImplDX9_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
+	NewFrameImGui();
 
 	//==============================
 	// メインの ImGui ウィンドウ
 	//==============================
-	// サイズ,場所固定
-	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(300, 720), ImGuiCond_Always); 
-
-	// シーン開始
-	ImGui::Begin("Debug & Mode Selector", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-
-	// FPS 表示
-	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-		1000.0f / (float)g_nCountFPS, (float)g_nCountFPS);
+	// 描画
+	StartImgui("MainMode Selector", IMGUITYPE_NONE);
 
 	// モード選択
-	if (ImGui::CollapsingHeader("Mode Selector"))
+	if (ImGui::CollapsingHeader("Mode Set"))
 	{
 		bool isEditMode = (g_mode == MODE_EDIT);
 
@@ -1146,76 +1108,13 @@ void ImguiDrawData()
 		ImGui::Text("Now Mode: %s", (g_mode == MODE_EDIT) ? "EDIT" : "PLAY");
 	}
 
-	// モデル情報
-	if (ImGui::CollapsingHeader("Model Info"))
-	{
-		//static char aSt[128] = "";
-
-		//ImGui::InputText("Enter text", aSt, sizeof(aSt));
-
-		//if (ImGui::Button("Save to File")) 
-		//{// 書き出し
-		//	SaveToFile(aSt);
-		//}		
-
-		//// モデルのサムネイルを表示
-		//if (g_pModelIconTexture)
-		//{
-		//	ImGui::Text("Model Icon:");
-		//	ImGui::Image((ImTextureID)g_pModelIconTexture, ImVec2(64, 64)); // 64x64ピクセルで描画
-		//}
-
-		ImGui::Text("SetBlock Num: %d / 256", ReturnEdit()); // 配置数
-		ImGui::Text("FilePass: %s", aStFile); // ファイルパス
-
-		// モデルの位置を変更可能にする
-		ImGui::Text("Model Position"); // 座標
-
-		if (ImGui::InputFloat("Pos X", &pEdit[nModel].mapedit.pos.x, 20.0f, 1000.0f, "%.2f"))
-		{
-			UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
-		}
-		if (ImGui::InputFloat("Pos Y", &pEdit[nModel].mapedit.pos.y, 20.0f, 1000.0f, "%.2f"))
-		{
-			UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
-
-		}
-		if (ImGui::InputFloat("Pos Z", &pEdit[nModel].mapedit.pos.z, 20.0f, 1000.0f, "%.2f"))
-		{
-			UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
-
-		}
-
-		// モデルのスケールを変更可能にする
-		ImGui::Text("Model Scale");
-
-		if (ImGui::InputFloat("Scale X", &pEdit[nModel].mapedit.Scal.x, 0.1f, 2.0f, "%.2f"))
-		{
-			UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
-		}
-		if (ImGui::InputFloat("Scale Y", &pEdit[nModel].mapedit.Scal.y, 0.1f, 2.0f, "%.2f"))
-		{
-			UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
-
-		}
-		if (ImGui::InputFloat("Scale Z", &pEdit[nModel].mapedit.Scal.z, 0.1f, 2.0f, "%.2f"))
-		{
-			UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
-
-		}
-	}
-
-	// 種類
-	if (ImGui::CollapsingHeader("Block Info"))
-	{
-		ImGui::Text("AllBlockType: %d / 256", ReturnType());
-	}
-
 	ImGui::End();
 
 	// レンダリング処理
 	ImGui::Render();
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+
+#endif
 }
 //=======================================
 // 座標更新用関数
@@ -1226,6 +1125,35 @@ void UpdateModelPosition(int modelIndex, D3DXVECTOR3 newPos)
 
 	// 座標を代入する
 	pEdit[modelIndex].mapedit.pos = newPos;
+
+	// +座標制限
+	if (pEdit[modelIndex].mapedit.pos.x >= 1000.0f)
+	{// X
+		pEdit[modelIndex].mapedit.pos.x = 1000.0f;
+	}
+	if (pEdit[modelIndex].mapedit.pos.y >= 1000.0f)
+	{// Y								   
+		pEdit[modelIndex].mapedit.pos.y = 1000.0f;
+	}
+	if (pEdit[modelIndex].mapedit.pos.z >= 1000.0f)
+	{// Z							   
+		pEdit[modelIndex].mapedit.pos.z = 1000.0f;
+	}
+
+	// -座標制限
+	if (pEdit[modelIndex].mapedit.pos.x <= -1000.0f)
+	{// X
+		pEdit[modelIndex].mapedit.pos.x = -1000.0f;
+	}
+	if (pEdit[modelIndex].mapedit.pos.y <= -1000.0f)
+	{// Y								   
+		pEdit[modelIndex].mapedit.pos.y = -1000.0f;
+	}
+	if (pEdit[modelIndex].mapedit.pos.z <= -1000.0f)
+	{// Z							   
+		pEdit[modelIndex].mapedit.pos.z = -1000.0f;
+	}
+
 
 	// もしモデルのワールドマトリクスを更新する必要がある場合
 	UpdateModelMatrix(modelIndex);
@@ -1252,6 +1180,20 @@ void UpdateModelScale(int modelIndex, D3DXVECTOR3 newScale)
 	if (pEdit[modelIndex].mapedit.Scal.z >= 2.0f)
 	{// Z							   
 		pEdit[modelIndex].mapedit.Scal.z = 2.0f;
+	}
+
+	// 縮小率制限
+	if (pEdit[modelIndex].mapedit.Scal.x <= 0.1f)
+	{// X
+		pEdit[modelIndex].mapedit.Scal.x = 0.1f;
+	}
+	if (pEdit[modelIndex].mapedit.Scal.y <= 0.1f)
+	{// Y								   
+		pEdit[modelIndex].mapedit.Scal.y = 0.1f;
+	}
+	if (pEdit[modelIndex].mapedit.Scal.z <= 0.1f)
+	{// Z							   
+		pEdit[modelIndex].mapedit.Scal.z = 0.1f;
 	}
 
 	// ワールドマトリクス更新
@@ -1290,18 +1232,30 @@ void UpdateModelMatrix(int modelIndex)
 //==============================
 void LoadModelIcon(LPDIRECT3DDEVICE9 pDevice, const char* filePath)
 {
+#if 0
+
+
 	// テクスチャの読み込み
 	if (FAILED(D3DXCreateTextureFromFile(pDevice, filePath, &g_pModelIconTexture)))
 	{
 		MessageBoxA(0, "モデルアイコンの読み込みに失敗しました", "Error", MB_OK);
 	}
+#endif // 0
+
 }
 void SaveToFile(const char* text) 
 {
+#if 0
+
+	// ファイルに書き出す
 	FILE* file = fopen("data\\test.txt", "w"); // "w" モードで書き込み
 	if (file)
 	{
 		fprintf(file, "%s", text);
 		fclose(file);
 	}
+
+
+#endif // 0
+
 }

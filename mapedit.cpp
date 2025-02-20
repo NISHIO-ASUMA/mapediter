@@ -95,7 +95,8 @@ void UninitMapEdit()
 	UninitLight();
 
 	// テクスチャの破棄
-	for (int i = 0; i < MAX_TEXTURE; i++)	{
+	for (int i = 0; i < MAX_TEXTURE; i++)	
+	{
 		for (int nCntMat = 0; nCntMat < (int)g_ModelInfo[i].dwNumMat; nCntMat++)
 		{
 			if (g_ModelInfo[i].pTexture[nCntMat] != NULL)
