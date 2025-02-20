@@ -197,6 +197,17 @@ void DrawImguiInfo()
 				SaveEdit();
 			}
 		}
+
+		// リロードか否か
+		static bool isReload = false;
+		static bool isload = isReload;
+
+		if (ImGui::Button("ReloadFile") && !isReload)
+		{
+			// 再読み込み処理
+			ReloadEdit();
+			isReload = true; // フラグをtrue
+		}
 	}
 	
 	//// 終了関数
