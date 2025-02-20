@@ -39,7 +39,7 @@ void InitImguiInfo(HWND hWnd, LPDIRECT3DDEVICE9 pDevice)
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // キーボード入力有効化
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // ゲームパッド入力有効化
 
-	ImGui::StyleColorsLight(); // テーマ適用
+	ImGui::StyleColorsClassic(); // テーマ適用
 
 	// ImGui のバックエンド初期化（Win32 & DirectX9）
 	ImGui_ImplWin32_Init(hWnd);
@@ -118,7 +118,7 @@ void DrawImguiInfo()
 	NewFrameImGui();
 
 	//==============================
-	// メインの ImGui ウィンドウ
+	// 1個目の ImGui ウィンドウ
 	//==============================
 	// 大きさ,サイズ設定
 	SetPosImgui(0.0f, 0.0f);
@@ -179,7 +179,42 @@ void DrawImguiInfo()
 		// Gui種類描画
 		// UpdatemallocData(nModel);
 	}
+
+	// ファイル情報
+	if (ImGui::CollapsingHeader("Save & Load"))
+	{
+		// セーブか否か
+		static bool isSave = false;
+		bool isState = isSave; // 前回の状態保存用
+
+		// チェックボックス
+		if (ImGui::Checkbox("SavingFile", &isSave))
+		{
+			// クリックされて isSave が true に変わったら保存処理を実行
+			if (isSave && !isState)
+			{
+				// ファイルに書き出す処理
+				SaveEdit();
+			}
+		}
+	}
 	
+	//// 終了関数
+	//ImGui::End();
+
+
+	//// 大きさ,サイズ設定
+	//SetPosImgui(1030.0f, 0.0f);
+	//SetSizeImgui(250.0f, 720.0f);
+
+	//// 描画
+	//StartImgui("Inspector", IMGUITYPE_NOMOVEANDSIZE);
+
+	//// モデル情報
+	//if (ImGui::CollapsingHeader("Model Info"))
+	//{
+
+	//}
 
 	// 終了処理
 	EndImgui();

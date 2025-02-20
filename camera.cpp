@@ -38,7 +38,7 @@ bool isPlayer;
 //=========================
 void InitCamera(void)
 {
-	g_camera.posV = D3DXVECTOR3(0.0f, 240.0f, -1000.0f);		 // カメラの位置
+	g_camera.posV = D3DXVECTOR3(0.0f, 350.0f, -1600.0f);		 // カメラの位置
 	g_camera.posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);			 // カメラの見ている位置
 	g_camera.vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);			 // 上方向ベクトル
 	g_camera.rot = D3DXVECTOR3(D3DX_PI * 0.65f, 0.0f, 0.0f); // 角度
