@@ -77,6 +77,7 @@ bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void ResetDevice();
 void ImguiDrawData();
+void SaveToFile(const char* text); // テキスト
 
 //===============================
 // メイン関数
@@ -1114,7 +1115,12 @@ void ImguiDrawData()
 	//==============================
 	// メインの ImGui ウィンドウ
 	//==============================
-	ImGui::Begin("Debug & Mode Selector");
+	// サイズ,場所固定
+	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(300, 720), ImGuiCond_Always); 
+
+	// シーン開始
+	ImGui::Begin("Debug & Mode Selector", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 	// FPS 表示
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
@@ -1143,12 +1149,21 @@ void ImguiDrawData()
 	// モデル情報
 	if (ImGui::CollapsingHeader("Model Info"))
 	{
-		// モデルのサムネイルを表示
-		if (g_pModelIconTexture)
-		{
-			ImGui::Text("Model Icon:");
-			ImGui::Image((ImTextureID)g_pModelIconTexture, ImVec2(64, 64)); // 64x64ピクセルで描画
-		}
+		//static char aSt[128] = "";
+
+		//ImGui::InputText("Enter text", aSt, sizeof(aSt));
+
+		//if (ImGui::Button("Save to File")) 
+		//{// 書き出し
+		//	SaveToFile(aSt);
+		//}		
+
+		//// モデルのサムネイルを表示
+		//if (g_pModelIconTexture)
+		//{
+		//	ImGui::Text("Model Icon:");
+		//	ImGui::Image((ImTextureID)g_pModelIconTexture, ImVec2(64, 64)); // 64x64ピクセルで描画
+		//}
 
 		ImGui::Text("SetBlock Num: %d / 256", ReturnEdit()); // 配置数
 		ImGui::Text("FilePass: %s", aStFile); // ファイルパス
@@ -1279,5 +1294,14 @@ void LoadModelIcon(LPDIRECT3DDEVICE9 pDevice, const char* filePath)
 	if (FAILED(D3DXCreateTextureFromFile(pDevice, filePath, &g_pModelIconTexture)))
 	{
 		MessageBoxA(0, "モデルアイコンの読み込みに失敗しました", "Error", MB_OK);
+	}
+}
+void SaveToFile(const char* text) 
+{
+	FILE* file = fopen("data\\test.txt", "w"); // "w" モードで書き込み
+	if (file)
+	{
+		fprintf(file, "%s", text);
+		fclose(file);
 	}
 }
