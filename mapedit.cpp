@@ -15,6 +15,8 @@
 #include "input.h"
 #include <stdio.h>
 #include "block.h"
+#include "imgui.h"
+#include "imgui_info.h"
 
 //*************************************
 // ファイル名列挙型宣言
@@ -49,6 +51,9 @@ float g_jump;						 // ジャンプ
 int g_CurrentFilepass;				 // ファイルパスのインデックス
 bool isLoad;						 // ロードしたかどうか
 
+MapEdit sceneobj[MAX_EDITOBJ]; // シーン配置用関数
+int objCount = 0;
+
 //****************************
 // プロトタイプ宣言
 //****************************
@@ -82,6 +87,7 @@ void InitMapEdit()
 	g_MapEdit[0].bUse = true;	// 使用状態
 	g_CurrentFilepass = FILEPASS_0;	// 初期ファイルパス
 	isLoad = false;	// ロード状態
+	objCount = 0;
 }
 //============================
 // マップエディター終了処理
@@ -440,8 +446,9 @@ void DrawMapEdit()
 //========================
 // 書きだし
 //========================
-void SaveEdit(void)
+bool SaveEdit()
 {
+	bool istrue = true;
 	// ファイルポインタを宣言
 	FILE* pFile;
 
@@ -476,8 +483,10 @@ void SaveEdit(void)
 		// メッセージBOXの表示
 		MessageBox(NULL, "開けません", "エラー", MB_OK);
 
-		return;
+		return !istrue;
 	}
+
+	return istrue;
 }
 //========================
 // 再読み込み
@@ -801,3 +810,90 @@ void InitEditinfo()
 		g_MapEdit[nCnt].mapedit.bCollision = true;					  // 初期状態を有効判定にする
 	}
 }
+#if 0
+//===========================================
+// モデルのD&D処理
+//===========================================
+void ShowModelSelector(EDITMODEL* models, int modelCount)
+{// インデックスを渡す
+	// 開始
+	if (ImGui::Begin("List"))
+	{
+		if (modelCount == 0)
+		{
+			// セレクター
+			ImGui::Selectable(models[0].FileName);
+
+			// ドラッグ開始
+			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+			{
+				ImGui::SetDragDropPayload("MODEL_PAYLOAD", 0, sizeof(int));
+				ImGui::Text("Dragging %s", models[0].FileName);
+				ImGui::EndDragDropSource();
+			}
+		}
+
+
+		for (int i = 0; i < modelCount; i++)
+		{
+			// セレクター
+			ImGui::Selectable(models[i].FileName);
+
+			// ドラッグ開始
+			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+			{
+				ImGui::SetDragDropPayload("MODEL_PAYLOAD", &i, sizeof(int));
+				ImGui::Text("Dragging %s", models[i].FileName);
+				ImGui::EndDragDropSource();
+			}
+		}
+
+		// 終了
+		ImGui::End();
+	}
+}
+//===========================================
+// モデルのD&Dハンドル処理
+//===========================================
+void HandleModelDrop(EDITMODEL* models) 
+{
+	if (ImGui::Begin("3D View")) 
+	{
+		ImVec2 windowSize = ImGui::GetContentRegionAvail();
+		ImGui::Image((void*)myRenderTexture, windowSize);
+
+		// ドロップターゲット
+		if (ImGui::BeginDragDropTarget()) 
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MODEL_PAYLOAD")) 
+			{
+				// インデックス
+				int modelIndex = *(const int*)payload->Data;
+
+				if (g_Edit < MAX_EDITOBJ) 
+				
+				{
+					// マウス位置を3D座標に変換
+					D3DXVECTOR3 dropPos = ConvertMouseTo3D(ImGui::GetMousePos());
+
+					// 新しいオブジェクトを `MapEdit` に追加
+					MapEdit newObject = {};
+					newObject.pos = dropPos;
+					newObject.rot = D3DXVECTOR3(0.0f,0.0f,0.0f);
+					newObject.Scal = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+					newObject.nType = modelIndex;
+					newObject.bCollision = true;
+
+					sceneobj[objCount] = newObject;
+
+					objCount++;
+				}
+			}
+			// ターゲットの終了
+			ImGui::EndDragDropTarget();
+		}
+
+		ImGui::End();
+	}
+}
+#endif

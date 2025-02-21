@@ -16,7 +16,7 @@ JUMP = 15.0			# ジャンプ量
 #-------------------------------------
 # 配置するモデルの種類数
 #-------------------------------------
-BLOCKTYPE = 4			# 配置する種類の最大数
+BLOCKTYPE = 3			# 配置する種類の最大数
 
 #-------------------------------------
 # 読み込むXファイル
@@ -24,4 +24,3 @@ BLOCKTYPE = 4			# 配置する種類の最大数
 MODEL_FILENAME = data/MODEL/block000.x #[1]ブロック1
 MODEL_FILENAME = data/MODEL/block001.x #[2]ブロック2
 MODEL_FILENAME = data/MODEL/block002.x #[3]ブロック3
-MODEL_FILENAME = data/MODEL/00_body.x

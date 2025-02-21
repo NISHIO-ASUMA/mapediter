@@ -65,7 +65,7 @@ void InitMapEdit();		// 初期化処理
 void UninitMapEdit();	// 終了処理
 void UpdateMapEdit();	// 更新処理
 void DrawMapEdit();		// 描画処理
-void SaveEdit();		// 保存処理
+// void SaveEdit();		// 保存処理
 void ReloadEdit();		// 再読み込み処理
 void LoadXFile();		// 外部からの読み込み
 EDITMODEL* GetBlockInfo(int type); // エディターモデル情報取得
@@ -77,5 +77,7 @@ float ReturnJump();		// ジャンプ量
 int Filepass();			// ファイルパスを返す
 bool IsGetLoad();		// リロードしたか
 MAPMODELINFO* MapInfo();// 配置時の状況取得
+bool SaveEdit();
+
 
 #endif

@@ -17,12 +17,11 @@
 #include "camera.h"
 #include "block.h"
 #include <stdio.h>
+#include "fade.h"
 
 //*******************************************
 // グローバル変数宣言
 //*******************************************
-char** items; // モデルリスト（動的配列）
-int g_n = 4;  // 種類数
 
 //===========================================
 // Guiの初期化関数
@@ -36,10 +35,23 @@ void InitImguiInfo(HWND hWnd, LPDIRECT3DDEVICE9 pDevice)
 	IMGUI_CHECKVERSION(); // ImGui のバージョンチェック
 	ImGui::CreateContext(); // ImGui コンテキスト作成
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
+
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // キーボード入力有効化
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // ゲームパッド入力有効化
 
 	ImGui::StyleColorsClassic(); // テーマ適用
+
+	// ====== フォント設定 ======
+	// カスタムフォントの追加 (フォントパスを変更してください)
+	ImFont* myFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/consola.ttf", 14.0f);
+
+	if (myFont == nullptr) 
+	{// フォントがNULLなら
+		printf("フォントのロードに失敗しました\n");
+	}
+
+	// フォントをリビルド
+	ImGui::GetIO().Fonts->Build();
 
 	// ImGui のバックエンド初期化（Win32 & DirectX9）
 	ImGui_ImplWin32_Init(hWnd);
@@ -50,7 +62,6 @@ void InitImguiInfo(HWND hWnd, LPDIRECT3DDEVICE9 pDevice)
 //===========================================
 void UninitImguiInfo()
 {
-
 	//=======================================
 	// ドロップダウンメニュー用終了処理
 	//========================================
@@ -84,7 +95,7 @@ void DrawImguiInfo()
 	//  情報取得関係
 	//================================
 	PLAYER* pPlayer = GetPlayer(); // プレイヤー
-	MODE nMode = GetMode(); // 現在のモード
+	MODE nMode = GetMode();	// 現在のモード取得
 
 	float fspeed = ReturnSpeed(); // 配置速度
 	int nType = ReturnType(); // 種類数
@@ -117,118 +128,174 @@ void DrawImguiInfo()
 	// フレーム開始
 	NewFrameImGui();
 
+	if (nMode == MODE_EDIT)
+	{
+		//==============================
+		// 1個目の ImGui ウィンドウ
+		//==============================
+		// 大きさ,サイズ設定
+		SetPosImgui(0.0f, 110.0f);
+		SetSizeImgui(250.0f, 560.0f);
+
+		// 描画
+		StartImgui("Edit_Info", IMGUITYPE_NOMOVEANDSIZE);
+
+		// モデル情報
+		if (ImGui::CollapsingHeader("Model Info"))
+		{
+
+			ImGui::Text("SetBlock Num: %d / 256", ReturnEdit()); // 配置数
+			ImGui::Text("FilePass: %s", aStFile); // ファイルパス
+
+			// モデルの位置を変更可能にする
+			ImGui::Text("Model Position"); // 座標
+
+			ImGui::SetNextItemWidth(100.0f);
+
+			if (ImGui::InputFloat("Pos X", &pEdit[nModel].mapedit.pos.x, 20.0f, 1000.0f, "%.2f"))
+			{
+				UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
+			}
+
+			ImGui::SetNextItemWidth(100.0f);
+
+			if (ImGui::InputFloat("Pos Y", &pEdit[nModel].mapedit.pos.y, 20.0f, 1000.0f, "%.2f"))
+			{
+				UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
+
+			}
+
+			ImGui::SetNextItemWidth(100.0f);
+
+			if (ImGui::InputFloat("Pos Z", &pEdit[nModel].mapedit.pos.z, 20.0f, 1000.0f, "%.2f"))
+			{
+				UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
+			}
+
+			// モデルのスケールを変更可能にする
+			ImGui::Text("Model Scale");
+
+			ImGui::SetNextItemWidth(100.0f);
+
+			if (ImGui::InputFloat("Scale X", &pEdit[nModel].mapedit.Scal.x, 0.1f, 2.0f, "%.2f"))
+			{
+				UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
+			}
+
+			ImGui::SetNextItemWidth(100.0f);
+
+			if (ImGui::InputFloat("Scale Y", &pEdit[nModel].mapedit.Scal.y, 0.1f, 2.0f, "%.2f"))
+			{
+				UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
+
+			}
+
+			ImGui::SetNextItemWidth(100.0f);
+
+			if (ImGui::InputFloat("Scale Z", &pEdit[nModel].mapedit.Scal.z, 0.1f, 2.0f, "%.2f"))
+			{
+				UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
+			}
+
+		}
+
+		// ファイル情報
+		if (ImGui::CollapsingHeader("Save & Load"))
+		{
+			static bool saveSuccess = false; // 成功フラグ
+			static bool saveError = false;   // 失敗フラグ
+			static float saveMessageTimer = 0.0f; // メッセージ表示用タイマー
+			static float saveMessageDuration = 2.0f; // 2秒間表示
+
+			if (ImGui::Button("Save File"))
+			{
+				if (SaveEdit())  // SaveEdit() の戻り値で成否を判断
+				{
+					saveSuccess = true;
+					saveError = false;
+					saveMessageTimer = ImGui::GetTime(); // 現在の時間を記録
+				}
+				else
+				{
+					saveSuccess = false;
+					saveError = true;
+					saveMessageTimer = ImGui::GetTime(); // 失敗時も記録
+				}
+			}
+
+			// メッセージの表示（一定時間後に消す）
+			if (saveSuccess)
+			{
+				if (ImGui::GetTime() - saveMessageTimer < saveMessageDuration)
+				{
+					// 書き出し成功
+					ImGui::TextColored(ImVec4(0, 1, 0, 1), "Save Successful!");
+				}
+				else
+				{
+					saveSuccess = false; // 時間が経過したら非表示
+				}
+			}
+			else if (saveError)
+			{
+				if (ImGui::GetTime() - saveMessageTimer < saveMessageDuration)
+				{
+					// 書き出し失敗
+					ImGui::TextColored(ImVec4(1, 0, 0, 1), "Save Failed!");
+				}
+				else
+				{
+					saveError = false; // 時間が経過したら非表示
+				}
+			}
+
+			// リロードか否か
+			static bool isReload = false;
+			static bool isload = isReload;
+
+			if (ImGui::Button("ReloadFile") && !isReload)
+			{
+				// 再読み込み処理
+				ReloadEdit();
+				isReload = true; // フラグをtrue
+			}
+
+		}
+
+		// 終了関数
+		ImGui::End();
+	}
+
 	//==============================
-	// 1個目の ImGui ウィンドウ
+	// 2個目の ImGui ウィンドウ
+	//==============================
+
+	// モード切替データ
+	ImguiDrawData();
+
+	//==============================
+	// 3個目の ImGui ウィンドウ
 	//==============================
 	// 大きさ,サイズ設定
-	SetPosImgui(0.0f, 0.0f);
-	SetSizeImgui(250.0f, 720.0f);
+	SetPosImgui(1000.0f, 0.0f);
+	SetSizeImgui(280.0f, 200.0f);
 
-	// 描画
-	StartImgui("Gui_Info", IMGUITYPE_NOMOVEANDSIZE);
+	// インスペクターの描画
+	StartImgui("Inspector", IMGUITYPE_NOMOVEANDSIZE);
 
-	// モデル情報
-	if (ImGui::CollapsingHeader("Model Info"))
+	if (ImGui::CollapsingHeader("Player_Info"))
 	{
-
-		ImGui::Text("SetBlock Num: %d / 256", ReturnEdit()); // 配置数
-		ImGui::Text("FilePass: %s", aStFile); // ファイルパス
-
-		// モデルの位置を変更可能にする
-		ImGui::Text("Model Position"); // 座標
-
-		ImGui::SetNextItemWidth(100.0f);
-
-		if (ImGui::InputFloat("Pos X", &pEdit[nModel].mapedit.pos.x, 20.0f, 1000.0f, "%.2f"))
-		{
-			UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
-		}
-
-		ImGui::SetNextItemWidth(100.0f);
-
-		if (ImGui::InputFloat("Pos Y", &pEdit[nModel].mapedit.pos.y, 20.0f, 1000.0f, "%.2f"))
-		{
-			UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
-
-		}
-
-		ImGui::SetNextItemWidth(100.0f);
-
-		if (ImGui::InputFloat("Pos Z", &pEdit[nModel].mapedit.pos.z, 20.0f, 1000.0f, "%.2f"))
-		{
-			UpdateModelPosition(nModel, pEdit[nModel].mapedit.pos); // モデルの位置更新関数を呼ぶ
-		}
-
-		// モデルのスケールを変更可能にする
-		ImGui::Text("Model Scale");
-
-		if (ImGui::InputFloat("Scale X", &pEdit[nModel].mapedit.Scal.x, 0.1f, 2.0f, "%.2f"))
-		{
-			UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
-		}
-		if (ImGui::InputFloat("Scale Y", &pEdit[nModel].mapedit.Scal.y, 0.1f, 2.0f, "%.2f"))
-		{
-			UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
-
-		}
-		if (ImGui::InputFloat("Scale Z", &pEdit[nModel].mapedit.Scal.z, 0.1f, 2.0f, "%.2f"))
-		{
-			UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
-		}
-
-		// Gui種類描画
-		// UpdatemallocData(nModel);
+		// プレイヤー情報
+		ImGui::Text("POS : %.2f,%.2f,%.2f", pPlayer->pos.x, pPlayer->pos.y, pPlayer->pos.z); // 現在の座標
+		ImGui::Text("ROT : %.2f,%.2f,%.2f", pPlayer->rot.x, pPlayer->rot.y, pPlayer->rot.z); // 現在の角度
 	}
 
-	// ファイル情報
-	if (ImGui::CollapsingHeader("Save & Load"))
-	{
-		// セーブか否か
-		static bool isSave = false;
-		bool isState = isSave; // 前回の状態保存用
+	// 3個目のウィンドウ終了
+	ImGui::End();
 
-		// チェックボックス
-		if (ImGui::Checkbox("SavingFile", &isSave))
-		{
-			// クリックされて isSave が true に変わったら保存処理を実行
-			if (isSave && !isState)
-			{
-				// ファイルに書き出す処理
-				SaveEdit();
-			}
-		}
-
-		// リロードか否か
-		static bool isReload = false;
-		static bool isload = isReload;
-
-		if (ImGui::Button("ReloadFile") && !isReload)
-		{
-			// 再読み込み処理
-			ReloadEdit();
-			isReload = true; // フラグをtrue
-		}
-	}
-	
-	//// 終了関数
-	//ImGui::End();
-
-
-	//// 大きさ,サイズ設定
-	//SetPosImgui(1030.0f, 0.0f);
-	//SetSizeImgui(250.0f, 720.0f);
-
-	//// 描画
-	//StartImgui("Inspector", IMGUITYPE_NOMOVEANDSIZE);
-
-	//// モデル情報
-	//if (ImGui::CollapsingHeader("Model Info"))
-	//{
-
-	//}
-
-	// 終了処理
-	EndImgui();
+	// レンダリング処理
+	ImGui::Render();
+	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 
 }
 //===========================================

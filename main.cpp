@@ -77,7 +77,6 @@ void LoadModelIcon(LPDIRECT3DDEVICE9 pDevice, const char* filePath);
 bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void ResetDevice();
-void ImguiDrawData();
 void SaveToFile(const char* text); // テキスト
 
 //===============================
@@ -628,8 +627,6 @@ void Draw(void)
 		{
 			// エディター画面
 			DrawMapEdit();
-
-
 		}
 
 		if (g_mode == MODE_PLAY)
@@ -646,16 +643,9 @@ void Draw(void)
 			// プレイヤー座標の描画
 			// DrawPlayerPos();
 		}
-
-		// モードせってい
-		// ImguiDrawData();
-
-		if (g_mode == MODE_EDIT)
-		{
-			// Gui描画
-			DrawImguiInfo();
-
-		}
+		
+		// Gui描画
+		DrawImguiInfo();
 
 		// 描画終了
 		g_pD3DDevice->EndScene();
@@ -1079,40 +1069,37 @@ void ResetDevice()
 void ImguiDrawData()
 {
 #if 1
-	// フレーム開始
-	NewFrameImGui();
-
 	//==============================
 	// メインの ImGui ウィンドウ
 	//==============================
-	// 描画
-	StartImgui("MainMode Selector", IMGUITYPE_NONE);
+	// 大きさ,サイズ設定
+	SetPosImgui(0.0f, 0.0f);
+	SetSizeImgui(250.0f, 100.0f);
 
-	// モード選択
-	if (ImGui::CollapsingHeader("Mode Set"))
+	// 描画形式設定
+	StartImgui("MainMode Selector", IMGUITYPE_NOMOVEANDSIZE);
+
+	ImGui::Text("FPS : %.2f", (float)g_nCountFPS);
+
+	// モード切替フラグ
+	bool isEditMode = (g_mode == MODE_EDIT);
+
+	if (ImGui::Checkbox("Edit Mode", &isEditMode))
 	{
-		bool isEditMode = (g_mode == MODE_EDIT);
 
-		if (ImGui::Checkbox("Edit Mode", &isEditMode))
+		g_mode = isEditMode ? MODE_EDIT : MODE_PLAY;
+
+		if (g_mode == MODE_PLAY)
 		{
-
-			g_mode = isEditMode ? MODE_EDIT : MODE_PLAY;
-
-			if (g_mode == MODE_PLAY)
-			{
-				LoadBlock(); // モデル読み込み
-			}
+			LoadBlock(); // モデル読み込み
 		}
-
-		// LoadModelIcon(g_pD3DDevice, "data/TEXTURE/gold.jpg");
-		ImGui::Text("Now Mode: %s", (g_mode == MODE_EDIT) ? "EDIT" : "PLAY");
 	}
 
+	// テキスト描画
+	ImGui::Text("Now Mode: %s", (g_mode == MODE_EDIT) ? "EDIT" : "PLAY");
+	
+	// 終了処理
 	ImGui::End();
-
-	// レンダリング処理
-	ImGui::Render();
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 
 #endif
 }

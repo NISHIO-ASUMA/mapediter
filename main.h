@@ -102,5 +102,6 @@ void DrawFPS(void);																	//　デバッグ表示
 void UpdateModelPosition(int modelIndex, D3DXVECTOR3 newPos);
 void UpdateModelScale(int modelIndex, D3DXVECTOR3 newScale);
 void UpdateModelMatrix(int modelIndex);
+void ImguiDrawData();
 
 #endif
