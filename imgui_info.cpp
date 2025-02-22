@@ -43,7 +43,7 @@ void InitImguiInfo(HWND hWnd, LPDIRECT3DDEVICE9 pDevice)
 
 	// ====== フォント設定 ======
 	// カスタムフォントの追加 (フォントパスを変更してください)
-	ImFont* myFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/consola.ttf", 14.0f);
+	ImFont* myFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/consola.ttf", 15.0f);
 
 	if (myFont == nullptr) 
 	{// フォントがNULLなら
@@ -207,8 +207,12 @@ void DrawImguiInfo()
 			static float saveMessageTimer = 0.0f; // メッセージ表示用タイマー
 			static float saveMessageDuration = 2.0f; // 2秒間表示
 
+			// 赤いボタン
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 0.6f)); // 赤色
+
 			if (ImGui::Button("Save File"))
 			{
+
 				if (SaveEdit())  // SaveEdit() の戻り値で成否を判断
 				{
 					saveSuccess = true;
@@ -222,6 +226,9 @@ void DrawImguiInfo()
 					saveMessageTimer = ImGui::GetTime(); // 失敗時も記録
 				}
 			}
+
+			// ボタンの設定を戻す
+			ImGui::PopStyleColor(1); // 1つのカラー設定をリセット
 
 			// メッセージの表示（一定時間後に消す）
 			if (saveSuccess)
@@ -264,39 +271,39 @@ void DrawImguiInfo()
 
 		// 終了関数
 		ImGui::End();
+		
+
+		//==============================
+		// 2個目の ImGui ウィンドウ
+		//==============================
+
+		// モード切替データ
+		ImguiDrawData();
+
+		//==============================
+		// 3個目の ImGui ウィンドウ
+		//==============================
+		// 大きさ,サイズ設定
+		SetPosImgui(1000.0f, 0.0f);
+		SetSizeImgui(280.0f, 200.0f);
+
+		// インスペクターの描画
+		StartImgui("Inspector", IMGUITYPE_NOMOVEANDSIZE);
+
+		if (ImGui::CollapsingHeader("Player_Info"))
+		{
+			// プレイヤー情報
+			ImGui::Text("POS : %.2f,%.2f,%.2f", pPlayer->pos.x, pPlayer->pos.y, pPlayer->pos.z); // 現在の座標
+			ImGui::Text("ROT : %.2f,%.2f,%.2f", pPlayer->rot.x, pPlayer->rot.y, pPlayer->rot.z); // 現在の角度
+		}
+
+		// 3個目のウィンドウ終了
+		ImGui::End();
+
+		// レンダリング処理
+		ImGui::Render();
+		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 	}
-
-	//==============================
-	// 2個目の ImGui ウィンドウ
-	//==============================
-
-	// モード切替データ
-	ImguiDrawData();
-
-	//==============================
-	// 3個目の ImGui ウィンドウ
-	//==============================
-	// 大きさ,サイズ設定
-	SetPosImgui(1000.0f, 0.0f);
-	SetSizeImgui(280.0f, 200.0f);
-
-	// インスペクターの描画
-	StartImgui("Inspector", IMGUITYPE_NOMOVEANDSIZE);
-
-	if (ImGui::CollapsingHeader("Player_Info"))
-	{
-		// プレイヤー情報
-		ImGui::Text("POS : %.2f,%.2f,%.2f", pPlayer->pos.x, pPlayer->pos.y, pPlayer->pos.z); // 現在の座標
-		ImGui::Text("ROT : %.2f,%.2f,%.2f", pPlayer->rot.x, pPlayer->rot.y, pPlayer->rot.z); // 現在の角度
-	}
-
-	// 3個目のウィンドウ終了
-	ImGui::End();
-
-	// レンダリング処理
-	ImGui::Render();
-	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-
 }
 //===========================================
 // Guiの開始関数

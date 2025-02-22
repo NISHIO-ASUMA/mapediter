@@ -389,7 +389,7 @@ void DrawCollisionBox(const D3DXVECTOR3& pos, const D3DXVECTOR3& size, const D3D
 	// ワイヤーフレームモードに設定
 	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
-	// 線の色を設定（赤）
+	// 色を設定
 	D3DMATERIAL9 mat;
 
 	// ゼロメモリー関数
