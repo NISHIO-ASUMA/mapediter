@@ -491,8 +491,10 @@ bool SaveEdit()
 //========================
 // 再読み込み
 //========================
-void ReloadEdit(void)
+bool ReloadEdit(void)
 {
+	bool istrue = true;
+
 	// ファイルポインタを宣言
 	FILE* pFile;
 
@@ -530,8 +532,12 @@ void ReloadEdit(void)
 	}
 	else
 	{// 開けなかったら
-		return;
+		// メッセージBOXの表示
+		MessageBox(NULL, "開けません", "エラー", MB_OK);
+		return !istrue;
 	}
+
+	return istrue;
 }
 //===============================
 // Xファイルの読み込み処理

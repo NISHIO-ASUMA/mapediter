@@ -256,30 +256,47 @@ void DrawImguiInfo()
 				}
 			}
 
-			// リロードか否か
+			// リロードフラグ
 			static bool isReload = false;
-			static bool isload = isReload;
+			static bool reloadSuccess = false; // 成功フラグ
+			static float reloadMessageTimer = 0.0f; // メッセージ表示用タイマー
+			static float reloadMessageDuration = 2.0f; // 2秒間表示
+
+			// 緑ボタン
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 1.0f, 0.0f, 0.6f));
 
 			if (ImGui::Button("ReloadFile") && !isReload)
 			{
 				// 再読み込み処理
-				ReloadEdit();
+				reloadSuccess = ReloadEdit(); // ReloadEdit() が true なら成功、false なら失敗とする
 				isReload = true; // フラグをtrue
+				reloadMessageTimer = ImGui::GetTime(); // 現在の時間を記録
+
 			}
 
+			// ボタンの設定を戻す
+			ImGui::PopStyleColor(1);
+
+			// 成否のメッセージを表示
+			if (isReload)
+			{
+				if (reloadSuccess)
+				{
+					if (ImGui::GetTime() - reloadMessageTimer < reloadMessageDuration)
+					{
+						ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Reload successful!");
+					}
+				}
+				else
+				{
+					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Reload failed!");
+				}
+			}
 		}
 
 		// 終了関数
 		ImGui::End();
 		
-
-		//==============================
-		// 2個目の ImGui ウィンドウ
-		//==============================
-
-		// モード切替データ
-		ImguiDrawData();
-
 		//==============================
 		// 3個目の ImGui ウィンドウ
 		//==============================
@@ -299,11 +316,19 @@ void DrawImguiInfo()
 
 		// 3個目のウィンドウ終了
 		ImGui::End();
-
-		// レンダリング処理
-		ImGui::Render();
-		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 	}
+
+	//====================================
+	// モード切り替えの ImGui ウィンドウ
+	//====================================
+
+	// モード切替データ
+	ImguiDrawData();
+
+	// レンダリング処理 ( 必ず最後の行に!)
+	ImGui::Render();
+	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+
 }
 //===========================================
 // Guiの開始関数

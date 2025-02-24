@@ -66,7 +66,7 @@ void UninitMapEdit();	// 終了処理
 void UpdateMapEdit();	// 更新処理
 void DrawMapEdit();		// 描画処理
 // void SaveEdit();		// 保存処理
-void ReloadEdit();		// 再読み込み処理
+bool ReloadEdit(void); // 再読み込み
 void LoadXFile();		// 外部からの読み込み
 EDITMODEL* GetBlockInfo(int type); // エディターモデル情報取得
 MapEdit* getMap();		// 構造体情報取得
