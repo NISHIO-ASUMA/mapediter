@@ -444,7 +444,7 @@ void UpdatemallocData(int nModel)
 //===========================================
 void ShowMapEditor() 
 {
-#if 0
+#if 1
 	static int selectedModel = 0; // 選択中のモデルインデックス
 	MAPMODELINFO* pEdit = MapInfo(); // 配置済みのブロック情報
 	int modelCount = ReturnEdit(); // 配置済みのブロック数を取得

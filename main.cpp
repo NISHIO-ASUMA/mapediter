@@ -598,7 +598,6 @@ void Draw(void)
 		// メッシュの描画
 		DrawMeshField();
 
-
 		if (g_mode == MODE_EDIT)
 		{
 			// エディター画面
@@ -615,9 +614,6 @@ void Draw(void)
 
 			// ブロックの描画
 			DrawBlock();
-
-			// プレイヤー座標の描画
-			// DrawPlayerPos();
 		}
 		
 		// Gui描画
