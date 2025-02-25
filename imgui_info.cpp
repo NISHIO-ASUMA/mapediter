@@ -42,17 +42,17 @@ void InitImguiInfo(HWND hWnd, LPDIRECT3DDEVICE9 pDevice)
 
 	ImGui::StyleColorsClassic(); // テーマ適用
 
-	// ====== フォント設定 ======
-	// カスタムフォントの追加 (フォントパスを変更してください)
-	ImFont* myFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/consola.ttf", 15.0f);
+	//// ====== フォント設定 ======
+	//// カスタムフォントの追加 (フォントパスを変更してください)
+	//ImFont* myFont = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/consola.ttf", 15.0f);
 
-	if (myFont == nullptr) 
-	{// フォントがNULLなら
-		printf("フォントのロードに失敗しました\n");
-	}
+	//if (myFont == nullptr) 
+	//{// フォントがNULLなら
+	//	printf("フォントのロードに失敗しました\n");
+	//}
 
-	// フォントをリビルド
-	ImGui::GetIO().Fonts->Build();
+	//// フォントをリビルド
+	//ImGui::GetIO().Fonts->Build();
 
 	// ImGui のバックエンド初期化（Win32 & DirectX9）
 	ImGui_ImplWin32_Init(hWnd);
