@@ -22,6 +22,7 @@
 //*******************************************
 // グローバル変数宣言
 //*******************************************
+void ShowMapEditor();
 
 //===========================================
 // Guiの初期化関数
@@ -77,6 +78,7 @@ void UninitImguiInfo()
 //===========================================
 void SetPosImgui(float PosX,float PosY)
 {
+	// ウィンドウの出現場所設定
 	ImGui::SetNextWindowPos(ImVec2(PosX, PosY), ImGuiCond_Always);
 }
 //===========================================
@@ -84,6 +86,7 @@ void SetPosImgui(float PosX,float PosY)
 //===========================================
 void SetSizeImgui(float SizeX, float SizeY)
 {
+	// ウィンドウのサイズ設定
 	ImGui::SetNextWindowSize(ImVec2(SizeX, SizeY), ImGuiCond_Always);
 }
 //===========================================
@@ -94,6 +97,8 @@ void DrawImguiInfo()
 	//================================
 	//  情報取得関係
 	//================================
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();
+
 	PLAYER* pPlayer = GetPlayer(); // プレイヤー
 	MODE nMode = GetMode();	// 現在のモード取得
 
@@ -135,7 +140,7 @@ void DrawImguiInfo()
 		//==============================
 		// 大きさ,サイズ設定
 		SetPosImgui(0.0f, 110.0f);
-		SetSizeImgui(250.0f, 560.0f);
+		SetSizeImgui(280.0f, 560.0f);
 
 		// 描画
 		StartImgui("Edit_Info", IMGUITYPE_NOMOVEANDSIZE);
@@ -187,7 +192,6 @@ void DrawImguiInfo()
 			if (ImGui::InputFloat("Scale Y", &pEdit[nModel].mapedit.Scal.y, 0.1f, 2.0f, "%.2f"))
 			{
 				UpdateModelScale(nModel, pEdit[nModel].mapedit.Scal); // 拡大率変更
-
 			}
 
 			ImGui::SetNextItemWidth(100.0f);
@@ -302,17 +306,13 @@ void DrawImguiInfo()
 		//==============================
 		// 大きさ,サイズ設定
 		SetPosImgui(1000.0f, 0.0f);
-		SetSizeImgui(280.0f, 200.0f);
+		SetSizeImgui(280.0f, 600.0f);
 
 		// インスペクターの描画
 		StartImgui("Inspector", IMGUITYPE_NOMOVEANDSIZE);
 
-		if (ImGui::CollapsingHeader("Player_Info"))
-		{
-			// プレイヤー情報
-			ImGui::Text("POS : %.2f,%.2f,%.2f", pPlayer->pos.x, pPlayer->pos.y, pPlayer->pos.z); // 現在の座標
-			ImGui::Text("ROT : %.2f,%.2f,%.2f", pPlayer->rot.x, pPlayer->rot.y, pPlayer->rot.z); // 現在の角度
-		}
+		// 選択中のブロックの情報を編集
+		ShowMapEditor();
 
 		// 3個目のウィンドウ終了
 		ImGui::End();
@@ -328,7 +328,7 @@ void DrawImguiInfo()
 	// レンダリング処理 ( 必ず最後の行に!)
 	ImGui::Render();
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-
+	
 }
 //===========================================
 // Guiの開始関数
@@ -438,4 +438,56 @@ void UpdatemallocData(int nModel)
 	//	printf("Selected: %s\n", items[currentItem]);
 	//}
 	
+}
+//===========================================
+// 選択中のブロックの情報編集関数
+//===========================================
+void ShowMapEditor() 
+{
+#if 0
+	static int selectedModel = 0; // 選択中のモデルインデックス
+	MAPMODELINFO* pEdit = MapInfo(); // 配置済みのブロック情報
+	int modelCount = ReturnEdit(); // 配置済みのブロック数を取得
+
+	if (!pEdit || modelCount == 0)
+	{// カウントが0だったら
+		ImGui::Text("No blocks available.");
+		return;
+	}
+
+	ImGui::Text("Select a block to edit:");
+
+	//char selectedLabel[32];
+	//snprintf(selectedLabel, sizeof(selectedLabel), "Block %d", selectedModel);
+
+	// モデル選択用コンボボックス
+	if (ImGui::BeginCombo("Block List", NULL))
+	{
+		for (int i = 0; i < modelCount; i++) 
+		{
+			// 文字型
+			char label[32];
+			snprintf(label, sizeof(label), "Block %d", i);
+			if (ImGui::Selectable(label, selectedModel == i)) 
+			{
+				selectedModel = i;
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	// 選択されたブロックの情報取得
+	MAPMODELINFO* pSelectedBlock = &pEdit[selectedModel];
+	EDITMODEL* pModelEdit = GetBlockInfo(pSelectedBlock->mapedit.nType);
+
+	if (pSelectedBlock && pModelEdit) 
+	{// インデックス番号が一致していたら
+		// 位置を調整
+		ImGui::DragFloat3("Position", pSelectedBlock->mapedit.pos, 20.0f, -1000.0f, 1000.0f);
+
+		// 拡大率を調整
+		ImGui::DragFloat3("Scale", pSelectedBlock->mapedit.Scal, 0.1f, 0.1f, 2.0f);
+	}
+#endif
+
 }

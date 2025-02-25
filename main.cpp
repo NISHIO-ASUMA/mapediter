@@ -71,14 +71,6 @@ void UpdateModelScale(int modelIndex, D3DXVECTOR3 newScale);  // 拡大率更新関数
 void UpdateModelMatrix(int modelIndex);		// ワールドマトリックス
 void LoadModelIcon(LPDIRECT3DDEVICE9 pDevice, const char* filePath);
 
-//******************************
-// imguiのプロトタイプ宣言
-//******************************
-bool CreateDeviceD3D(HWND hWnd);
-void CleanupDeviceD3D();
-void ResetDevice();
-void SaveToFile(const char* text); // テキスト
-
 //===============================
 // メイン関数
 //===============================
@@ -216,8 +208,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 				// 更新処理
 				Update();
 
-				// ImguiDrawData();
-
 				// 描画関数
 				DrawImguiInfo();
 
@@ -229,7 +219,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_  HINSTANCE hInstancePrev, 
 
 			}
 		}
-
 	}
 
 	// 終了処理
@@ -445,19 +434,6 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// Gui情報の初期化
 	InitImguiInfo(hWnd, g_pD3DDevice);
-
-	//// ====== ImGui 初期化 ======
-	//IMGUI_CHECKVERSION(); // ImGui のバージョンチェック
-	//ImGui::CreateContext(); // ImGui コンテキスト作成
-	//ImGuiIO& io = ImGui::GetIO(); (void)io;
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // キーボード入力有効化
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // ゲームパッド入力有効化
-
-	//ImGui::StyleColorsLight(); // テーマ適用
-
-	//// ImGui のバックエンド初期化（Win32 & DirectX9）
-	//ImGui_ImplWin32_Init(hWnd);
-	//ImGui_ImplDX9_Init(g_pD3DDevice);
 
 	return S_OK; // 結果を返す
 
@@ -1074,7 +1050,7 @@ void ImguiDrawData()
 	//==============================
 	// 大きさ,サイズ設定
 	SetPosImgui(0.0f, 0.0f);
-	SetSizeImgui(250.0f, 100.0f);
+	SetSizeImgui(280.0f, 100.0f);
 
 	// 描画形式設定
 	StartImgui("MainMode Selector", IMGUITYPE_NOMOVEANDSIZE);

@@ -104,4 +104,13 @@ void UpdateModelScale(int modelIndex, D3DXVECTOR3 newScale);
 void UpdateModelMatrix(int modelIndex);
 void ImguiDrawData();
 
+//******************************
+// imguiのプロトタイプ宣言
+//******************************
+bool CreateDeviceD3D(HWND hWnd);
+void CleanupDeviceD3D();
+void ResetDevice();
+void SaveToFile(const char* text); // テキスト
+
+
 #endif
